@@ -51,6 +51,7 @@ data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=
 - Hands-on exercise converting a set of R scripts a modular and tested format
 - Two scripts that analyze data on airline tickets from the Bureau of Transportation Statistics
 - Script download: [https://github.com/mattwigway/odum-modular-design-r](https://github.com/mattwigway/odum-modular-design-r)
+- These slides: [https://projects.indicatrix.org/odum-modular-design-r](https://projects.indicatrix.org/odum-modular-design-r)
 
 # The two scripts
 
