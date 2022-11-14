@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.1.251">
+
+  <title>Modular design and software development best practices in R</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="center">
+  <h1 class="title">Modular design and software development best practices in R</h1>
+  <p class="institute">Odum Institute<br>University of North Carolina at Chapel Hill</p>
+</section>
+
+<section id="about-me" class="title-slide slide level1 center">
+<h1>About me</h1>
+<ul>
+<li>Assistant Professor of City and Regional Planning
+<ul>
+<li>Research focus: transportation modeling and simulation</li>
+</ul></li>
+<li>Quantitative Methods Consultant at Odum</li>
+<li>Three years as a software developer before graduate school</li>
+</ul>
+</section>
+
+<section id="why-this-matters" class="title-slide slide level1 center">
+<h1>Why this matters</h1>
+<ul>
+<li>Code is increasingly common in research</li>
+<li>Most academics receive little to no formal training in software development</li>
+<li>This can lead to
+<ul>
+<li>Inefficient development (takes too much time)</li>
+<li>Errors in code</li>
+<li>Non-reproducible analyses</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="what-well-be-doing-today" class="title-slide slide level1 center">
+<h1>What we’ll be doing today</h1>
+<ul>
+<li>Hands-on exercise converting a set of R scripts a modular and tested format</li>
+<li>Two scripts that analyze data on airline tickets from the Bureau of Transportation Statistics</li>
+<li>Script download: <a href="https://github.com/mattwigway/odum-modular-design-r">https://github.com/mattwigway/odum-modular-design-r</a></li>
+<li>These slides: <a href="https://projects.indicatrix.org/odum-modular-design-r">https://projects.indicatrix.org/odum-modular-design-r</a></li>
+</ul>
+</section>
+
+<section id="the-two-scripts" class="title-slide slide level1 center">
+<h1>The two scripts</h1>
+<ul>
+<li>Both load and clean the air ticket data</li>
+<li>One analyzes the busiest air routes in the country</li>
+<li>One looks at airline “fortress hubs”—which airports have the most concentrated service from a single airline</li>
+</ul>
+</section>
+
+<section id="what-well-address" class="title-slide slide level1 center">
+<h1>What we’ll address</h1>
+<ul>
+<li>Duplicated code</li>
+<li>Literal numeric values</li>
+<li>Automated tests</li>
+<li>Package version incompatibilities</li>
+</ul>
+</section>
+
+<section id="what-we-wont-address" class="title-slide slide level1 center">
+<h1>What we won’t address</h1>
+<ul>
+<li>Version control
+<ul>
+<li>Odum offers separate Git and Github class</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="air_analysis.r" class="title-slide slide level1 center">
+<h1><code>air_analysis.R</code></h1>
+<ul>
+<li>Hands-on walkthrough of file</li>
+</ul>
+</section>
+
+<section id="airline_analysis.r" class="title-slide slide level1 center">
+<h1><code>airline_analysis.R</code></h1>
+<ul>
+<li>Hands-on walkthrough of file</li>
+</ul>
+</section>
+
+<section id="duplicated-code-dont-repeat-yourself" class="title-slide slide level1 center">
+<h1>Duplicated code (don’t repeat yourself)</h1>
+<ul>
+<li>Common software development rule: don’t repeat yourself (DRY)</li>
+<li>In <code>air_analysis.R</code> we do the same analysis twice, once by airport and once by city</li>
+<li>We can eliminate this duplicated code using a <em>function</em></li>
+</ul>
+</section>
+
+<section id="functions" class="title-slide slide level1 center">
+<h1>Functions</h1>
+<ul>
+<li>A function is a reusable piece of code that can be executed many times</li>
+<li>Functions separate the <em>definition</em> of code from the <em>execution</em></li>
+<li>You use functions all the time
+<ul>
+<li>For instance, <code>sum()</code> is a function</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="anatomy-of-a-function" class="title-slide slide level1 center">
+<h1>Anatomy of a function</h1>
+<ul>
+<li>Functions are R code that is given a name to be referred to later</li>
+<li>Functions have three main components
+<ul>
+<li>Body
+<ul>
+<li>The main R code of the function</li>
+</ul></li>
+<li>Arguments
+<ul>
+<li>Values that can be specified each time the function is used</li>
+</ul></li>
+<li>Return value
+<ul>
+<li>The result of the function</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+
+<section id="anatomy-of-a-function-1" class="title-slide slide level1 center">
+<h1>Anatomy of a function</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>calculate_cylinder_volume <span class="ot">=</span> <span class="cf">function</span> (radius, height) {</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    base_area <span class="ot">=</span> pi <span class="sc">*</span> radius <span class="sc">^</span> <span class="dv">2</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    volume <span class="ot">=</span> base_area <span class="sc">*</span> height</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="fu">return</span>(volume)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div>
+<ul>
+<li class="fragment"><em>radius</em> and <em>height</em> are arguments</li>
+<li class="fragment">Next two lines are body (the actual calculations)</li>
+<li class="fragment"><em>volume</em> is the return value
+<ul>
+<li class="fragment"><code>return</code> ends the function, any code after <code>return</code> will not be run</li>
+</ul></li>
+</ul>
+</div>
+</section>
+
+<section id="using-functions" class="title-slide slide level1 center">
+<h1>Using functions</h1>
+<ul>
+<li>Code above <em>defines</em> the function</li>
+<li>It doesn’t run any of the function code</li>
+<li>Function code is run when the function is <em>called</em></li>
+</ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">calculate_cylinder_volume</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6.283185</code></pre>
+</div>
+</div>
+</div>
+</section>
+
+<section id="defining-functions-in-air_analysis.r" class="title-slide slide level1 center">
+<h1>Defining functions in <code>air_analysis.R</code></h1>
+<ul>
+<li>The analysis is repeated twice, once by airport pairs and once by city pairs</li>
+<li>We will re-write this analysis into a function, and use the same code twice</li>
+</ul>
+</section>
+
+<section id="defining-functions-in-air_analysis.r-1" class="title-slide slide level1 center">
+<h1>Defining functions in <code>air_analysis.R</code></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>pairs <span class="ot">=</span> <span class="fu">group_by</span>(data, Origin, Dest) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="at">distance_km=</span><span class="fu">first</span>(Distance) <span class="sc">*</span> <span class="fl">1.609</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a>pairs <span class="ot">=</span> <span class="fu">mutate</span>(pairs,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="at">airport1 =</span> <span class="fu">if_else</span>(Origin <span class="sc">&lt;</span> Dest, Origin, Dest),</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="at">airport2 =</span> <span class="fu">if_else</span>(Origin <span class="sc">&lt;</span> Dest, Dest, Origin)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    )</span>
+<span id="cb4-9"><a href="#cb4-9"></a>pairs <span class="ot">=</span> <span class="fu">group_by</span>(pairs, airport1, airport2) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="at">distance_km=</span><span class="fu">first</span>(distance_km)</span>
+<span id="cb4-12"><a href="#cb4-12"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="step-one-make-it-a-function" class="title-slide slide level1 center">
+<h1>Step one: make it a function</h1>
+<ul>
+<li>Wrap code in <code>function () {...}</code> and add a return value
+<ul>
+<li>If you don’t have a <code>return()</code> R will return the result of the last line</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>busiest_routes <span class="ot">=</span> <span class="cf">function</span> () {</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(data, Origin, Dest) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb5-3"><a href="#cb5-3"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(Distance) <span class="sc">*</span> <span class="fl">1.609</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    pairs <span class="ot">=</span> <span class="fu">mutate</span>(pairs,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>        <span class="at">airport1 =</span> <span class="fu">if_else</span>(Origin <span class="sc">&lt;</span> Dest, Origin, Dest),</span>
+<span id="cb5-8"><a href="#cb5-8"></a>        <span class="at">airport2 =</span> <span class="fu">if_else</span>(Origin <span class="sc">&lt;</span> Dest, Dest, Origin)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>        )</span>
+<span id="cb5-10"><a href="#cb5-10"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(pairs, airport1, airport2) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb5-11"><a href="#cb5-11"></a>        <span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb5-12"><a href="#cb5-12"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(distance_km)</span>
+<span id="cb5-13"><a href="#cb5-13"></a>    )</span>
+<span id="cb5-14"><a href="#cb5-14"></a>    </span>
+<span id="cb5-15"><a href="#cb5-15"></a>    <span class="fu">return</span>(<span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers))</span>
+<span id="cb5-16"><a href="#cb5-16"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="running-our-function" class="title-slide slide level1 center">
+<h1>Running our function</h1>
+<ul>
+<li>Running the code on the previous slide defines the function, but does not run it</li>
+<li>We have to <em>call</em> the function to run it</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">busiest_routes</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4,872 × 4
+# Groups:   airport1 [339]
+   airport1 airport2 Passengers distance_km
+   &lt;chr&gt;    &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+ 1 JFK      LAX            6764       3982.
+ 2 HNL      OGG            6163        161.
+ 3 LGA      ORD            6125       1179.
+ 4 LAS      LAX            5949        380.
+ 5 ATL      FLL            5909        935.
+ 6 DEN      LAS            5654       1010.
+ 7 ATL      MCO            5648        650.
+ 8 HNL      LAX            5610       4113.
+ 9 LAX      ORD            5385       2806.
+10 DEN      PHX            5222        969.
+# … with 4,862 more rows</code></pre>
+</div>
+</div>
+</section>
+
+<section id="adding-arguments" class="title-slide slide level1 center">
+<h1>Adding arguments</h1>
+<ul>
+<li>We want to make the <code>Origin</code> and <code>Dest</code> column names arguments to the function</li>
+<li>It’s also standard to make the data itself and anything else you refer to inside the function arguments</li>
+</ul>
+</section>
+
+<section id="adding-arguments-1" class="title-slide slide level1 center">
+<h1>Adding arguments</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>busiest_routes <span class="ot">=</span> <span class="cf">function</span> (dataframe, origcol, destcol) {</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(dataframe, origcol, destcol) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb8-3"><a href="#cb8-3"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(Distance) <span class="sc">*</span> <span class="fl">1.609</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    pairs <span class="ot">=</span> <span class="fu">mutate</span>(pairs,</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        <span class="at">airport1 =</span> <span class="fu">if_else</span>(origcol <span class="sc">&lt;</span> destcol, origcol, destcol),</span>
+<span id="cb8-8"><a href="#cb8-8"></a>        <span class="at">airport2 =</span> <span class="fu">if_else</span>(origcol <span class="sc">&lt;</span> destcol, destcol, origcol)</span>
+<span id="cb8-9"><a href="#cb8-9"></a>        )</span>
+<span id="cb8-10"><a href="#cb8-10"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(pairs, airport1, airport2) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb8-11"><a href="#cb8-11"></a>        <span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb8-12"><a href="#cb8-12"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(distance_km)</span>
+<span id="cb8-13"><a href="#cb8-13"></a>    )</span>
+<span id="cb8-14"><a href="#cb8-14"></a>    </span>
+<span id="cb8-15"><a href="#cb8-15"></a>    <span class="fu">return</span>(<span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers))</span>
+<span id="cb8-16"><a href="#cb8-16"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="adding-arguments-2" class="title-slide slide level1 center">
+<h1>Adding arguments</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">busiest_routes</span>(data, Origin, Dest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `group_by()`:
+! Must group by variables found in `.data`.
+Column `origcol` is not found.
+Column `destcol` is not found.</code></pre>
+</div>
+</div>
+</section>
+
+<section id="what-happened" class="title-slide slide level1 center">
+<h1>What happened?</h1>
+<ul>
+<li>R tried to group by the columns <code>origcol</code> and <code>destcol</code></li>
+<li>These columns don’t exist</li>
+<li>We need to tell R that <code>origcol</code> and <code>destcol</code> aren’t actually column names, but variables that contain column names</li>
+<li>Any place we refer to a variable containing a column name inside a function, use the “embracing operator” <code>{{ variable }}</code> to tell R to use the value contained by <code>variable</code> as the column name
+<ul>
+<li>This is only true when the variable name would not usually be in quotes (<code>" or '</code>)</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="adding-arguments-3" class="title-slide slide level1 center">
+<h1>Adding arguments</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>busiest_routes <span class="ot">=</span> <span class="cf">function</span> (dataframe, origcol, destcol) {</span>
+<span id="cb11-2"><a href="#cb11-2"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(dataframe, {{ origcol }}, {{ destcol }}) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb11-3"><a href="#cb11-3"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(Distance) <span class="sc">*</span> <span class="fl">1.609</span>)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a>    pairs <span class="ot">=</span> <span class="fu">mutate</span>(pairs,</span>
+<span id="cb11-7"><a href="#cb11-7"></a>        <span class="at">airport1 =</span> <span class="fu">if_else</span>({{ origcol }} <span class="sc">&lt;</span> {{ destcol }}, {{ origcol }}, {{ destcol }}),</span>
+<span id="cb11-8"><a href="#cb11-8"></a>        <span class="at">airport2 =</span> <span class="fu">if_else</span>({{ origcol }} <span class="sc">&lt;</span> {{ destcol }}, {{ destcol }}, {{ origcol }})</span>
+<span id="cb11-9"><a href="#cb11-9"></a>        )</span>
+<span id="cb11-10"><a href="#cb11-10"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(pairs, airport1, airport2) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb11-11"><a href="#cb11-11"></a>        <span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb11-12"><a href="#cb11-12"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(distance_km)</span>
+<span id="cb11-13"><a href="#cb11-13"></a>    )</span>
+<span id="cb11-14"><a href="#cb11-14"></a>    </span>
+<span id="cb11-15"><a href="#cb11-15"></a>    <span class="fu">return</span>(<span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers))</span>
+<span id="cb11-16"><a href="#cb11-16"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="adding-arguments-4" class="title-slide slide level1 center">
+<h1>Adding arguments</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">busiest_routes</span>(data, Origin, Dest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4,872 × 4
+# Groups:   airport1 [339]
+   airport1 airport2 Passengers distance_km
+   &lt;chr&gt;    &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+ 1 JFK      LAX            6764       3982.
+ 2 HNL      OGG            6163        161.
+ 3 LGA      ORD            6125       1179.
+ 4 LAS      LAX            5949        380.
+ 5 ATL      FLL            5909        935.
+ 6 DEN      LAS            5654       1010.
+ 7 ATL      MCO            5648        650.
+ 8 HNL      LAX            5610       4113.
+ 9 LAX      ORD            5385       2806.
+10 DEN      PHX            5222        969.
+# … with 4,862 more rows</code></pre>
+</div>
+</div>
+</section>
+
+<section id="using-our-function-for-cities" class="title-slide slide level1 center">
+<h1>Using our function for cities</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">busiest_routes</span>(data, OriginCity, DestCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,766 × 4
+# Groups:   airport1 [301]
+   airport1                              airport2                Passe…¹ dista…²
+   &lt;chr&gt;                                 &lt;chr&gt;                     &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Los Angeles, CA (Metropolitan Area)   San Francisco, CA (Met…   21592    582.
+ 2 Miami, FL (Metropolitan Area)         New York City, NY (Met…   20675   1720.
+ 3 Las Vegas, NV                         Los Angeles, CA (Metro…   13559    380.
+ 4 Los Angeles, CA (Metropolitan Area)   New York City, NY (Met…   13168   3982.
+ 5 Chicago, IL                           New York City, NY (Met…   12167   1187.
+ 6 New York City, NY (Metropolitan Area) Orlando, FL               11598   1519.
+ 7 Los Angeles, CA (Metropolitan Area)   Phoenix, AZ               11188    523.
+ 8 Atlanta, GA (Metropolitan Area)       New York City, NY (Met…   10922   1200.
+ 9 Dallas/Fort Worth, TX                 Los Angeles, CA (Metro…   10340   1939.
+10 Denver, CO                            Los Angeles, CA (Metro…    9950   1318.
+# … with 3,756 more rows, and abbreviated variable names ¹​Passengers,
+#   ²​distance_km</code></pre>
+</div>
+</div>
+</section>
+
+<section id="putting-it-all-together" class="title-slide slide level1 center">
+<h1>Putting it all together</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>busiest_routes <span class="ot">=</span> <span class="cf">function</span> (dataframe, origcol, destcol) {</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(dataframe, {{ origcol }}, {{ destcol }}) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb16-3"><a href="#cb16-3"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(Distance) <span class="sc">*</span> <span class="fl">1.609</span>)</span>
+<span id="cb16-4"><a href="#cb16-4"></a>    <span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers)</span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a>    pairs <span class="ot">=</span> <span class="fu">mutate</span>(pairs,</span>
+<span id="cb16-7"><a href="#cb16-7"></a>        <span class="at">airport1 =</span> <span class="fu">if_else</span>({{ origcol }} <span class="sc">&lt;</span> {{ destcol }}, {{ origcol }}, {{ destcol }}),</span>
+<span id="cb16-8"><a href="#cb16-8"></a>        <span class="at">airport2 =</span> <span class="fu">if_else</span>({{ origcol }} <span class="sc">&lt;</span> {{ destcol }}, {{ destcol }}, {{ origcol }})</span>
+<span id="cb16-9"><a href="#cb16-9"></a>        )</span>
+<span id="cb16-10"><a href="#cb16-10"></a>    pairs <span class="ot">=</span> <span class="fu">group_by</span>(pairs, airport1, airport2) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(</span>
+<span id="cb16-11"><a href="#cb16-11"></a>        <span class="at">Passengers=</span><span class="fu">sum</span>(Passengers),</span>
+<span id="cb16-12"><a href="#cb16-12"></a>        <span class="at">distance_km=</span><span class="fu">first</span>(distance_km)</span>
+<span id="cb16-13"><a href="#cb16-13"></a>    )</span>
+<span id="cb16-14"><a href="#cb16-14"></a>    </span>
+<span id="cb16-15"><a href="#cb16-15"></a>    <span class="fu">return</span>(<span class="fu">arrange</span>(pairs, <span class="sc">-</span>Passengers))</span>
+<span id="cb16-16"><a href="#cb16-16"></a>}</span>
+<span id="cb16-17"><a href="#cb16-17"></a></span>
+<span id="cb16-18"><a href="#cb16-18"></a><span class="fu">busiest_routes</span>(data, Origin, Dest)</span>
+<span id="cb16-19"><a href="#cb16-19"></a><span class="fu">busiest_routes</span>(data, OriginCity, DestCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="exercise-do-the-same-in-airline_analysis.r" class="title-slide slide level1 center">
+<h1>Exercise: do the same in <code>airline_analysis.R</code></h1>
+<ul>
+<li>Write a function to compute market shares</li>
+<li>Use that function to compute market shares by operating carrier and ticketing carrier</li>
+<li>Bonus: also compute market shares for individual airports instead of cities</li>
+</ul>
+</section>
+
+<section id="result" class="title-slide slide level1 center">
+<h1>Result</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>market_shares <span class="ot">=</span> <span class="cf">function</span> (dataframe, carrier, city) {</span>
+<span id="cb17-2"><a href="#cb17-2"></a>  mkt_shares <span class="ot">=</span> <span class="fu">group_by</span>(dataframe, {{ carrier }}, {{ city }}) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>    <span class="fu">summarize</span>(<span class="at">Passengers=</span><span class="fu">sum</span>(Passengers)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a>    <span class="fu">group_by</span>({{ city }}) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>    <span class="fu">mutate</span>(<span class="at">market_share=</span>Passengers<span class="sc">/</span><span class="fu">sum</span>(Passengers), <span class="at">total_passengers=</span><span class="fu">sum</span>(Passengers)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb17-7"><a href="#cb17-7"></a></span>
+<span id="cb17-8"><a href="#cb17-8"></a>  res <span class="ot">=</span> <span class="fu">filter</span>(mkt_shares, total_passengers <span class="sc">&gt;</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="sc">-</span>market_share)</span>
+<span id="cb17-9"><a href="#cb17-9"></a>  <span class="fu">return</span>(res)</span>
+<span id="cb17-10"><a href="#cb17-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="result-1" class="title-slide slide level1 center">
+<h1>Result</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">market_shares</span>(data, OperatingCarrierName, OriginCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,666 × 5
+   OperatingCarrierName   OriginCity                     Passe…¹ marke…² total…³
+   &lt;chr&gt;                  &lt;chr&gt;                            &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Allegiant Air          Sanford, FL                       3782   1        3782
+ 2 Frontier Airlines Inc. Trenton, NJ                       1104   0.996    1108
+ 3 Allegiant Air          Punta Gorda, FL                   2485   0.991    2507
+ 4 Delta Air Lines Inc.   Atlanta, GA (Metropolitan Are…   71110   0.730   97452
+ 5 American Airlines Inc. Charlotte, NC                    33962   0.670   50678
+ 6 Southwest Airlines Co. St. Louis, MO                    11412   0.648   17600
+ 7 Alaska Airlines Inc.   Anchorage, AK                     3447   0.626    5510
+ 8 Southwest Airlines Co. Harlingen/San Benito, TX           701   0.618    1135
+ 9 Hawaiian Airlines Inc. Hilo, HI                           723   0.601    1202
+10 Delta Air Lines Inc.   Detroit, MI                      18211   0.579   31462
+# … with 1,656 more rows, and abbreviated variable names ¹​Passengers,
+#   ²​market_share, ³​total_passengers</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">market_shares</span>(data, TicketingCarrierName, OriginCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,076 × 5
+   TicketingCarrierName   OriginCity                     Passe…¹ marke…² total…³
+   &lt;chr&gt;                  &lt;chr&gt;                            &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Allegiant Air          Sanford, FL                       3782   1        3782
+ 2 Frontier Airlines Inc. Trenton, NJ                       1104   0.996    1108
+ 3 Allegiant Air          Punta Gorda, FL                   2485   0.991    2507
+ 4 American Airlines Inc. Charlotte, NC                    45934   0.906   50678
+ 5 Delta Air Lines Inc.   Atlanta, GA (Metropolitan Are…   75458   0.774   97452
+ 6 Delta Air Lines Inc.   Detroit, MI                      23708   0.754   31462
+ 7 Alaska Airlines Inc.   Fairbanks, AK                      887   0.752    1179
+ 8 Delta Air Lines Inc.   Minneapolis/St. Paul, MN         26397   0.737   35833
+ 9 Delta Air Lines Inc.   Salt Lake City, UT               20871   0.724   28838
+10 American Airlines Inc. Wilmington, NC                     974   0.716    1361
+# … with 1,066 more rows, and abbreviated variable names ¹​Passengers,
+#   ²​market_share, ³​total_passengers</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">market_shares</span>(data, TicketingCarrierName, Origin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,199 × 5
+   TicketingCarrierName   Origin Passengers market_share total_passengers
+   &lt;chr&gt;                  &lt;chr&gt;       &lt;dbl&gt;        &lt;dbl&gt;            &lt;dbl&gt;
+ 1 Allegiant Air          SFB          3782        1                 3782
+ 2 Frontier Airlines Inc. TTN          1104        0.996             1108
+ 3 Allegiant Air          AZA          2014        0.994             2026
+ 4 Allegiant Air          PIE          3227        0.991             3255
+ 5 Allegiant Air          PGD          2485        0.991             2507
+ 6 Southwest Airlines Co. DAL         19203        0.960            19998
+ 7 Southwest Airlines Co. HOU         14097        0.939            15010
+ 8 Southwest Airlines Co. MDW         22579        0.931            24250
+ 9 American Airlines Inc. CLT         45934        0.906            50678
+10 American Airlines Inc. DFW         61340        0.840            73022
+# … with 1,189 more rows</code></pre>
+</div>
+</div>
+</section>
+
+<section id="symbolic-constants" class="title-slide slide level1 center">
+<h1>Symbolic constants</h1>
+<ul>
+<li>We still have the value <code>1.609</code> in our function to convert miles to kilometers</li>
+<li>It’s a bad practice to have literal values like these in your code
+<ul>
+<li>In a large project, value will end up spread over many files</li>
+<li>Difficult to change (maybe you want to increase accuracy later by changing it to <code>1.609344</code>)</li>
+<li>Numbers used in many places can be prone to typos</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="symbolic-constants-1" class="title-slide slide level1 center">
+<h1>Symbolic constants</h1>
+<ul>
+<li>We can define a <em>constant variable</em> in our file that contains the value <code>1.609</code>, and refer to it when needed</li>
+<li>By convention, constants are all uppercase, and usually appear near the start of the file</li>
+<li>R does not enforce variables being constant, you could change them in other code, but you shouldn’t</li>
+</ul>
+</section>
+
+<section id="symbolic-constants-2" class="title-slide slide level1 center">
+<h1>Symbolic constants</h1>
+<ul>
+<li>Near the top of your code file, add</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>KILOMETERS_PER_MILE <span class="ot">=</span> <span class="fl">1.609</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Replace <code>1.609</code> in your function with <code>KILOMETERS_PER_MILE</code></li>
+</ul>
+</section>
+
+<section id="runtime-checks-stopifnot" class="title-slide slide level1 center">
+<h1>Runtime checks: <code>stopifnot</code></h1>
+<ul>
+<li>A first step towards ensuring correctness is to add checks throughout your code</li>
+<li>In R, this is most easily done with the <code>stopifnot</code> function - this will error if whatever condition it checks is not true</li>
+</ul>
+</section>
+
+<section id="runtime-checks-stopifnot-1" class="title-slide slide level1 center">
+<h1>Runtime checks: <code>stopifnot</code></h1>
+<ul>
+<li>Let’s make sure all of the passenger numbers are positive and non-NA</li>
+<li>Add these lines to the start of your <code>busiest_routes</code> function:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(dataframe<span class="sc">$</span>Passengers <span class="sc">&gt;=</span> <span class="dv">1</span>))</span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(dataframe<span class="sc">$</span>Passengers)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="confirming-that-errors-occur" class="title-slide slide level1 center">
+<h1>Confirming that errors occur</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">busiest_routes</span>(<span class="fu">mutate</span>(data, <span class="at">Passengers=</span><span class="sc">-</span><span class="dv">1</span>), Origin, Dest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in busiest_routes(mutate(data, Passengers = -1), Origin, Dest): all(dataframe$Passengers &gt;= 1) is not TRUE</code></pre>
+</div>
+</div>
+</section>
+
+<section id="using-functions-in-multiple-files" class="title-slide slide level1 center">
+<h1>Using functions in multiple files</h1>
+<ul>
+<li>Often we may want to use functions in multiple files</li>
+<li>For instance, we use the same data loading code in both <code>air_analysis.R</code> and <code>airline_analysis.R</code></li>
+<li>The simplest way is to put the functions in another file, and use <code>source()</code> to load them</li>
+<li><code>source()</code> will run the code in a file and make all of the functions and variables available</li>
+<li>Just as if that code was pasted into each source file</li>
+</ul>
+</section>
+
+<section id="creating-a-data-cleaning-function" class="title-slide slide level1 center">
+<h1>Creating a data cleaning function</h1>
+<ul>
+<li>Create a function that takes arguments for the file names of the dataset and the two tables that are joined to it,</li>
+<li>performs the data cleaning/processing,</li>
+<li>and returns the final dataset</li>
+<li>Save this function to a new file in the same directory as the others</li>
+</ul>
+</section>
+
+<section id="using-your-data-cleaning-function" class="title-slide slide level1 center">
+<h1>Using your data cleaning function</h1>
+<ul>
+<li>Delete the data loading code in each of the analysis files</li>
+<li>Use the 🧹 button in RStudio to clear the data from memory</li>
+<li>Add and run a line <code>source("filename.R")</code> to load your new R file</li>
+<li>Call your new function like this</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>data <span class="ot">=</span> <span class="fu">load_data</span>(<span class="st">"data/air_sample.csv"</span>, <span class="st">"data/L_CITY_MARKET_ID.csv"</span>, <span class="st">"data/L_CARRIERS.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="the-finished-function" class="title-slide slide level1 center">
+<h1>The finished function</h1>
+<p>Yours might not look exactly the same, and that’s okay</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>load_data <span class="ot">=</span> <span class="cf">function</span>(data_file, city_file, carrier_file) {</span>
+<span id="cb29-2"><a href="#cb29-2"></a>    data <span class="ot">=</span> <span class="fu">read_csv</span>(data_file)</span>
+<span id="cb29-3"><a href="#cb29-3"></a></span>
+<span id="cb29-4"><a href="#cb29-4"></a>    market_ids <span class="ot">=</span> <span class="fu">read_csv</span>(city_file)</span>
+<span id="cb29-5"><a href="#cb29-5"></a>    data <span class="ot">=</span> <span class="fu">left_join</span>(data, <span class="fu">rename</span>(market_ids, <span class="at">OriginCity=</span><span class="st">"Description"</span>),</span>
+<span id="cb29-6"><a href="#cb29-6"></a>        <span class="at">by=</span><span class="fu">c</span>(<span class="at">OriginCityMarketID=</span><span class="st">"Code"</span>))</span>
+<span id="cb29-7"><a href="#cb29-7"></a>    data <span class="ot">=</span> <span class="fu">left_join</span>(data, <span class="fu">rename</span>(market_ids, <span class="at">DestCity=</span><span class="st">"Description"</span>),</span>
+<span id="cb29-8"><a href="#cb29-8"></a>        <span class="at">by=</span><span class="fu">c</span>(<span class="at">DestCityMarketID=</span><span class="st">"Code"</span>))</span>
+<span id="cb29-9"><a href="#cb29-9"></a></span>
+<span id="cb29-10"><a href="#cb29-10"></a>    carriers <span class="ot">=</span> <span class="fu">read_csv</span>(carrier_file)</span>
+<span id="cb29-11"><a href="#cb29-11"></a>    data <span class="ot">=</span> <span class="fu">left_join</span>(data, <span class="fu">rename</span>(carriers, <span class="at">OperatingCarrierName=</span><span class="st">"Description"</span>),</span>
+<span id="cb29-12"><a href="#cb29-12"></a>        <span class="at">by=</span><span class="fu">c</span>(<span class="at">OpCarrier=</span><span class="st">"Code"</span>))</span>
+<span id="cb29-13"><a href="#cb29-13"></a>    data <span class="ot">=</span> <span class="fu">left_join</span>(data, <span class="fu">rename</span>(carriers, <span class="at">TicketingCarrierName=</span><span class="st">"Description"</span>),</span>
+<span id="cb29-14"><a href="#cb29-14"></a>        <span class="at">by=</span><span class="fu">c</span>(<span class="at">TkCarrier=</span><span class="st">"Code"</span>))</span>
+<span id="cb29-15"><a href="#cb29-15"></a></span>
+<span id="cb29-16"><a href="#cb29-16"></a>    <span class="fu">return</span>(data)</span>
+<span id="cb29-17"><a href="#cb29-17"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="all-data-manipulation-should-be-in-code" class="title-slide slide level1 center">
+<h1>All data manipulation should be in code</h1>
+<ul>
+<li>I <em>never</em> modify original data files, and rarely save new ones</li>
+<li>I always write code or functions to make all the changes/cleaning I need</li>
+<li>I run that function to load the data each time</li>
+<li>This way I can always see what has been done to data</li>
+</ul>
+</section>
+
+<section id="creating-r-packages" class="title-slide slide level1 center">
+<h1>Creating R packages</h1>
+<ul>
+<li>You use packages all the time when you use R
+<ul>
+<li>Any time you run <code>library(...)</code> you’re loading a package</li>
+</ul></li>
+<li>You can also create packages yourself</li>
+</ul>
+</section>
+
+<section id="advantages-of-creating-a-package" class="title-slide slide level1 center">
+<h1>Advantages of creating a package</h1>
+<ul>
+<li>Easy to share code, even between projects (no copying .R files to load with <code>source()</code>)</li>
+<li>Packages facilitate automated testing</li>
+</ul>
+</section>
+
+<section id="creating-an-r-package" class="title-slide slide level1 center">
+<h1>Creating an R package</h1>
+<ul>
+<li>Several packages are available that make creating your own packages <em>much</em> easier
+<ul>
+<li><code>devtools</code> for overall workflow management</li>
+<li><code>roxygen2</code> for documentation generation and</li>
+<li><code>testthat</code> for automated testing</li>
+</ul></li>
+<li>Install these now</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"devtools"</span>, <span class="st">"roxygen2"</span>, <span class="st">"testthat"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="what-is-an-r-package" class="title-slide slide level1 center">
+<h1>What is an R package?</h1>
+<ul>
+<li>A collection of functions, data, and documentation that can be easily installed in R and available to all R scripts</li>
+</ul>
+</section>
+
+<section id="structure-of-an-r-package" class="title-slide slide level1 center">
+<h1>Structure of an R package</h1>
+<ul>
+<li>R packages are created in <em>source</em> form</li>
+<li>This just means that they consist of the original R code</li>
+<li>When you install a package, it is converted to <em>binary</em> form
+<ul>
+<li>Only readable by the computer, and ready to be run by R</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="structure-of-an-r-package-1" class="title-slide slide level1 center">
+<h1>Structure of an R package</h1>
+<p>An R source package is just a directory with a specific structure</p>
+<ul>
+<li><code>packagename</code>
+<ul>
+<li><code>packagename.Rproj</code></li>
+<li><code>.Rbuildignore</code></li>
+<li><code>DESCRIPTION</code></li>
+<li><code>NAMESPACE</code></li>
+<li><code>R</code>
+<ul>
+<li>Your R files</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+
+<section id="creating-your-r-package" class="title-slide slide level1 center">
+<h1>Creating your R package</h1>
+<ul>
+<li>Load <code>devtools</code> and use <code>create_package(...)</code> to create the directory structure for your package</li>
+<li>You should put the package in a directory that is separate from your main project directory</li>
+<li><code>create_package(...)</code> will create the directory if it doesn’t already exist</li>
+<li>Call your package <code>airlinestats</code></li>
+<li>A new RStudio window will open with your package</li>
+</ul>
+</section>
+
+<section id="creating-your-r-package-1" class="title-slide slide level1 center">
+<h1>Creating your R package</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="fu">create_package</span>(<span class="st">"~/git/airlinestats"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>A new RStudio window will open with the code for your new package</li>
+</ul>
+</section>
+
+<section id="adding-r-code-to-your-package" class="title-slide slide level1 center">
+<h1>Adding R code to your package</h1>
+<ul>
+<li>Your R code goes in files in the <code>R/</code> directory</li>
+<li>Any file in this directory ending in <code>.R</code> will be part of your package</li>
+</ul>
+</section>
+
+<section id="sidebar-namespaces" class="title-slide slide level1 center">
+<h1>Sidebar: namespaces</h1>
+<ul>
+<li>Multiple packages may define functions with the same name</li>
+<li>To keep this straight, R uses <em>namespaces</em></li>
+<li>Each package gets a namespace, and functions are defined within that namespace</li>
+<li>When you use <code>library(package)</code>, functions from that package are loaded into the global (main) namespace</li>
+<li><code>package::function</code> refers to a function within a specific package’s namespace</li>
+</ul>
+</section>
+
+<section id="differences-between-r-scripts-and-package-code" class="title-slide slide level1 center">
+<h1>Differences between R scripts and package code</h1>
+<ul>
+<li>Packages should never use <code>library()</code> as this could affect code from other packages</li>
+<li>Almost everything in a package should be inside a function
+<ul>
+<li>Code that is not in functions will be run when the package is compiled or installed, not when it is used</li>
+<li>Main exception is constants</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="adding-r-code-to-your-airlinestats-package" class="title-slide slide level1 center">
+<h1>Adding R code to your <code>airlinestats</code> package</h1>
+<ul>
+<li>Create two <code>.R</code> files, <code>load.R</code> and <code>analysis.R</code></li>
+<li>Put your <code>load_data</code> function in <code>load.R</code></li>
+<li>Put the functions to calculate market shares and route popularity in <code>analysis.R</code></li>
+<li>Put the symbolic constant <code>KILOMETERS_PER_MILE</code> in <code>analysis.R</code></li>
+<li><em>Don’t</em> include <code>library(tidyverse)</code> anywhere</li>
+</ul>
+</section>
+
+<section id="loading-your-package" class="title-slide slide level1 center">
+<h1>Loading your package</h1>
+<ul>
+<li>During development, you can load your package with <code>load_all()</code></li>
+<li>This will reload the latest version of all of your R code</li>
+<li><code>load_all</code> is from <code>devtools</code>, so you have to load that first</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="fu">load_all</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="using-your-package" class="title-slide slide level1 center">
+<h1>Using your package</h1>
+<ul>
+<li>Functions from your package are now available</li>
+<li>Try running the <code>load_data</code> function</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>data <span class="ot">=</span> <span class="fu">load_data</span>(</span>
+<span id="cb33-2"><a href="#cb33-2"></a>    <span class="st">"../odum-modular-design/data/air_sample.csv"</span>,</span>
+<span id="cb33-3"><a href="#cb33-3"></a>    <span class="st">"../odum-modular-design/data/L_CITY_MARKET_ID.csv"</span>,</span>
+<span id="cb33-4"><a href="#cb33-4"></a>    <span class="st">"../odum-modular-design/data/L_CARRIERS.csv"</span></span>
+<span id="cb33-5"><a href="#cb33-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<pre>Error in read_csv(data_file) : could not find function "read_csv"</pre>
+</div>
+</section>
+
+<section id="referring-to-functions-from-other-libraries" class="title-slide slide level1 center">
+<h1>Referring to functions from other libraries</h1>
+<ul>
+<li>Normally, <code>read_csv</code> and other functions become available when you run <code>library(tidyverse)</code></li>
+<li>But we don’t do this in libraries</li>
+<li>There are two main ways to refer to functions from other libraries
+<ul>
+<li>Fully-qualified notation: <code>readr::read_csv</code></li>
+<li><code>@importFrom</code> comments</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="fully-qualified-notation" class="title-slide slide level1 center">
+<h1>Fully-qualified notation</h1>
+<ul>
+<li>When using fully qualified notation, we put the name of the library followed by <code>::</code> in front of the function name</li>
+<li>So, <code>read_csv</code> is replaced with <code>readr::read_csv</code></li>
+<li><code>left_join</code> and <code>rename</code> are prefixed with <code>dplyr::</code></li>
+</ul>
+</section>
+
+<section id="fully-qualified-notation-1" class="title-slide slide level1 center">
+<h1>Fully qualified notation</h1>
+<ul>
+<li>We tell R that we want to use functions from the libraries <code>readr</code> and <code>dplyr</code> by running <code>use_package()</code></li>
+<li>Do this, and run <code>load_all</code> again, and confirm that <code>load_data</code> now works</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">use_package</span>(<span class="st">"readr"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2"></a><span class="fu">use_package</span>(<span class="st">"dplyr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="using-tidyverse-functionality" class="title-slide slide level1 center">
+<h1>Using <code>tidyverse</code> functionality</h1>
+<ul>
+<li><code>tidyverse</code> is a collection of many packages</li>
+<li>Using <code>tidyverse</code> directly in libraries is discourages</li>
+<li>Most data manipulation functions are from <code>dplyr</code>, data reading functions from <code>readr</code></li>
+</ul>
+</section>
+
+<section id="importfrom" class="title-slide slide level1 center">
+<h1><code>@importFrom</code></h1>
+<ul>
+<li>If you don’t want to type out <code>dplyr::</code> over and over, you can use <code>@importFrom</code> to bring a function into your package’s namespace</li>
+<li>The <code>devtools</code> <code>use_import_from</code> function automates this task</li>
+</ul>
+</section>
+
+<section id="importfrom-1" class="title-slide slide level1 center">
+<h1><code>@importFrom</code></h1>
+<ul>
+<li>Let’s import <code>summarize</code>, <code>group_by</code>, <code>mutate</code>, <code>first</code>, <code>if_else</code>, <code>arrange</code>, <code>ungroup</code>, <code>filter</code> and <code>summarize</code> from <code>dplyr</code> to make our analysis code work</li>
+<li>We alse need to import <code>%&gt;%</code> from <code>magrittr</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">use_import_from</span>(<span class="st">"dplyr"</span>, <span class="fu">c</span>(<span class="st">"summarize"</span>, <span class="st">"group_by"</span>, <span class="st">"mutate"</span>, <span class="st">"first"</span>, <span class="st">"if_else"</span>, <span class="st">"filter"</span>, <span class="st">"ungroup"</span>, <span class="st">"arrange"</span>, <span class="st">"summarize"</span>))</span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="fu">use_import_from</span>(<span class="st">"magrittr"</span>, <span class="st">"%&gt;%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Accept the prompt to generate package documentation</li>
+</ul>
+</section>
+
+<section id="what-happened-1" class="title-slide slide level1 center">
+<h1>What happened?</h1>
+<ul>
+<li><code>devtools</code> created a new <code>airlinestats-package.R</code> that contains <code>@importFrom</code> statements to bring these functions into the package namespace</li>
+<li>The file consists of comments, but the <code>roxygen2</code> documentation system will convert these comments into import statements in the file <code>NAMESPACE</code> when the documentation is built</li>
+</ul>
+</section>
+
+<section id="confirm-it-worked" class="title-slide slide level1 center">
+<h1>Confirm it worked</h1>
+<ul>
+<li>Re-run <code>load_all</code></li>
+<li>Run the two analyses again:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">market_shares</span>(data, OperatingCarrierName, OriginCity)</span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="fu">busiest_routes</span>(data, OriginCity, DestCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="checking-the-package" class="title-slide slide level1 center">
+<h1>Checking the package</h1>
+<ul>
+<li>Run the <code>check()</code> function from <code>devtools</code></li>
+</ul>
+</section>
+
+<section id="checking-the-package-1" class="title-slide slide level1 center">
+<h1>Checking the package</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">check</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<pre>❯ checking DESCRIPTION meta-information ... WARNING
+  Non-standard license specification:
+    `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+  Standardizable: FALSE
+
+❯ checking R code for possible problems ... NOTE
+  busiest_routes: no visible binding for global variable ‘Passengers’
+  busiest_routes: no visible binding for global variable ‘Distance’
+  busiest_routes: no visible binding for global variable ‘airport1’
+  busiest_routes: no visible binding for global variable ‘airport2’
+  busiest_routes: no visible binding for global variable ‘distance_km’
+  market_shares: no visible binding for global variable ‘Passengers’
+  market_shares: no visible binding for global variable ‘market_share’
+  Undefined global functions or variables:
+    Distance Passengers airport1 airport2 distance_km market_share
+
+0 errors ✔ | 1 warning ✖ | 1 note ✖
+</pre>
+</div>
+</section>
+
+<section id="addressing-the-issues" class="title-slide slide level1 center">
+<h1>Addressing the issues</h1>
+<ul>
+<li><code>Non-standard license specification</code>
+<ul>
+<li>R is suggesting you fill out the <code>DESCRIPTION</code> file, which includes choosing a license. We’ll skip this for now.</li>
+</ul></li>
+<li><code>No visible branding</code> and <code>undefined global</code>
+<ul>
+<li>These are the columns of our data; R doesn’t know this when checking the code, though, and warns that they may be undefined</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="installing-the-package" class="title-slide slide level1 center">
+<h1>Installing the package</h1>
+<ul>
+<li>Just run <code>install()</code> to install the package on your machine</li>
+<li>Now it will be available in any R script</li>
+<li>You may be prompted to update packages when you do this</li>
+</ul>
+</section>
+
+<section id="bringing-it-full-circle" class="title-slide slide level1 center">
+<h1>Bringing it full circle</h1>
+<ul>
+<li>Return to the original script files</li>
+<li>Replace the code in <code>air_analysis.R</code> and confirm you get the same results</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="fu">library</span>(airlinestats)</span>
+<span id="cb38-2"><a href="#cb38-2"></a>data <span class="ot">=</span> <span class="fu">load_data</span>(<span class="st">"data/air_sample.csv"</span>, <span class="st">"data/L_CITY_MARKET_ID.csv"</span>, <span class="st">"data/L_CARRIERS.csv"</span>)</span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="fu">busiest_routes</span>(data, Origin, Dest)</span>
+<span id="cb38-4"><a href="#cb38-4"></a><span class="fu">busiest_routes</span>(data, OriginCity, DestCity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<pre>Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MARKET_ID.csv") : 
+  could not find function "load_data"
+</pre>
+</div>
+</section>
+
+<section id="fixing-the-error" class="title-slide slide level1 center">
+<h1>Fixing the error</h1>
+<ul>
+<li>Only functions you explicitly <em>export</em> from a package will be available outside the package</li>
+<li>This allows you to have functions used only internally</li>
+<li>We mark a function to be exported by adding a comment above the function definition</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co">#' @export</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Mark all three functions exported</li>
+</ul>
+</section>
+
+<section id="reinstalling-the-package" class="title-slide slide level1 center">
+<h1>Reinstalling the package</h1>
+<ul>
+<li>We need to run three functions to reinstall
+<ul>
+<li><code>document()</code> to parse the special comments we added</li>
+<li><code>check()</code> to help ensure we didn’t introduce additional errors</li>
+<li><code>install()</code> to reinstall the package</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="a-new-warning" class="title-slide slide level1 center">
+<h1>A new warning</h1>
+<pre>❯ checking for missing documentation entries ... WARNING
+  Undocumented code objects:
+    ‘busiest_routes’ ‘load_data’ ‘market_shares’
+  All user-level objects in a package should have documentation entries.
+  See chapter ‘Writing R documentation files’ in the ‘Writing R
+  Extensions’ manual.
+</pre>
+<ul>
+<li>R suggests that all exported functions in a package have documentation</li>
+<li>We’ll ignore this for now</li>
+</ul>
+</section>
+
+<section id="finishing-up" class="title-slide slide level1 center">
+<h1>Finishing up</h1>
+<ul>
+<li>Re-run the code using your package; it should work now</li>
+<li>You may have to restart R</li>
+</ul>
+</section>
+
+<section id="automated-testing" class="title-slide slide level1 center">
+<h1>Automated testing</h1>
+<ul>
+<li>Automated testing formalizes testing and makes it repeatable</li>
+<li>Every test is run automatically when you run <code>check()</code></li>
+<li>If you break something later, you are more likely to find out about it if your code has automated tests</li>
+</ul>
+</section>
+
+<section id="the-structure-of-testing" class="title-slide slide level1 center">
+<h1>The structure of testing</h1>
+<ul>
+<li>Automated tests consist of code and <em>expectations</em>
+<ul>
+<li>Expectations are called <em>assertions</em> in other languages</li>
+</ul></li>
+<li>A test exercises one of the functions in your package, and specifies expectations about its output</li>
+<li>Good tests are small, with one piece of code tested and a handful of expections</li>
+<li>This may require splitting your package code up into multiple functions</li>
+<li>It’s a good idea to test how your package acts when used incorrectly as well—for instance, when fed bad data</li>
+</ul>
+</section>
+
+<section id="automated-testing-in-r" class="title-slide slide level1 center">
+<h1>Automated testing in R</h1>
+<ul>
+<li>In R, automated testing is provided by the <code>testthat</code> package</li>
+<li>We can add testing to our package by running</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="fu">use_testthat</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="automated-testing-in-r-1" class="title-slide slide level1 center">
+<h1>Automated testing in R</h1>
+<ul>
+<li>We now have a <code>tests/</code> directory, with a <code>testthat</code> directory inside it</li>
+<li>Any file starting with <code>test</code> and ending with <code>.R</code> in this directory will be run as part of automated testing</li>
+</ul>
+</section>
+
+<section id="writing-tests" class="title-slide slide level1 center">
+<h1>Writing tests</h1>
+<ul>
+<li>Create an R file to hold tests for the analysis functions</li>
+<li>It’s good practice to match the names of the test files to the names of the files that define the code being tested, so create <code>tests/testthat/test-analysis.R</code></li>
+</ul>
+</section>
+
+<section id="writing-tests-1" class="title-slide slide level1 center">
+<h1>Writing tests</h1>
+<ul>
+<li>We’ll write two tests for the analysis code
+<ol type="1">
+<li>We’ll test that market shares of all airline at an airport sum to 1</li>
+<li>We’ll test that passing in a dataset without a <code>Passengers</code> column leads to an error</li>
+</ol></li>
+</ul>
+</section>
+
+<section id="writing-tests-2" class="title-slide slide level1 center">
+<h1>Writing tests</h1>
+<ul>
+<li>Often, we need data for our tests</li>
+<li>Here, we will create a small dataset within our test file directly</li>
+<li>It is also possible to distribute a CSV with your package with test data</li>
+<li>I like to put my code to generate test data in a function, and re-create the data for each test, so that there is no chance of one test modifying the data used by another
+<ul>
+<li>Unless the data take so long to create or load that this is impractical</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="test-data" class="title-slide slide level1 center">
+<h1>Test data</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>get_data <span class="ot">=</span> <span class="cf">function</span> () {</span>
+<span id="cb41-2"><a href="#cb41-2"></a>  data <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb41-3"><a href="#cb41-3"></a>    <span class="at">Origin=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"SFO"</span>, <span class="st">"ORD"</span>, <span class="st">"DCA"</span>, <span class="st">"PHX"</span>, <span class="st">"BOS"</span>, <span class="st">"RDU"</span>), <span class="dv">20</span>),</span>
+<span id="cb41-4"><a href="#cb41-4"></a>    <span class="at">Destination=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"DFW"</span>, <span class="st">"MCI"</span>, <span class="st">"MIA"</span>, <span class="st">"ABQ"</span>, <span class="st">"IAH"</span>, <span class="st">"SJU"</span>), <span class="dv">20</span>),</span>
+<span id="cb41-5"><a href="#cb41-5"></a>    <span class="at">Passengers=</span><span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">20</span>),</span>
+<span id="cb41-6"><a href="#cb41-6"></a>    <span class="at">Carrier=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"United"</span>, <span class="st">"American"</span>, <span class="st">"Delta"</span>, <span class="st">"Southwest"</span>), <span class="dv">30</span>)</span>
+<span id="cb41-7"><a href="#cb41-7"></a>  )</span>
+<span id="cb41-8"><a href="#cb41-8"></a>  <span class="fu">return</span>(data)</span>
+<span id="cb41-9"><a href="#cb41-9"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="write-the-test-for-market-shares" class="title-slide slide level1 center">
+<h1>Write the test for market shares</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">test_that</span>(<span class="st">"Market shares sum to 1"</span>, {</span>
+<span id="cb42-2"><a href="#cb42-2"></a>  data <span class="ot">=</span> <span class="fu">get_data</span>()</span>
+<span id="cb42-3"><a href="#cb42-3"></a>  shares <span class="ot">=</span> <span class="fu">market_shares</span>(data, Carrier, Origin)</span>
+<span id="cb42-4"><a href="#cb42-4"></a>  total_shares <span class="ot">=</span> <span class="fu">group_by</span>(shares, Origin) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">overall=</span><span class="fu">sum</span>(market_share))</span>
+<span id="cb42-5"><a href="#cb42-5"></a>  <span class="co"># six airports, so six shares</span></span>
+<span id="cb42-6"><a href="#cb42-6"></a>  <span class="fu">expect_equal</span>(total_shares<span class="sc">$</span>overall, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>))</span>
+<span id="cb42-7"><a href="#cb42-7"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="write-the-test-for-bad-input" class="title-slide slide level1 center">
+<h1>Write the test for bad input</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">test_that</span>(<span class="st">"Error when passengers column missing"</span>, {</span>
+<span id="cb43-2"><a href="#cb43-2"></a>  data <span class="ot">=</span> <span class="fu">get_data</span>() <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Passengers)</span>
+<span id="cb43-3"><a href="#cb43-3"></a>  <span class="fu">expect_error</span>(<span class="fu">busiest_routes</span>(data, Origin, Destination))</span>
+<span id="cb43-4"><a href="#cb43-4"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="run-tests" class="title-slide slide level1 center">
+<h1>Run tests</h1>
+<ul>
+<li>Click “run tests” in the upper-right corner in RStudio
+<ul>
+<li>This will run the tests in the current test file</li>
+</ul></li>
+<li>Alternately, run</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="fu">test_file</span>(<span class="st">"tests/testthat/test-analysis.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="fix-test-errors" class="title-slide slide level1 center">
+<h1>Fix test errors</h1>
+<ul>
+<li>We got a test failure for the market shares test</li>
+<li>This is because we filtered out small airlines in the function</li>
+<li>Let’s remove the filtering from the function
+<ul>
+<li>It’s good to break your functions into smaller pieces for easier testing</li>
+</ul></li>
+</ul>
+</section>
+
+<section id="exercise" class="title-slide slide level1 center">
+<h1>Exercise</h1>
+<ul>
+<li>Check and reinstall your package</li>
+<li>Notice that your tests were run</li>
+<li>Confirm your scripts still work</li>
+</ul>
+</section>
+
+<section>
+<section id="when" class="title-slide slide level1 center">
+<h1>When…</h1>
+
+</section>
+<section id="to-create-a-package" class="slide level2">
+<h2>to create a package</h2>
+<ul>
+<li>When you are building reusable functions for a large project, or several projects</li>
+<li>When you want to employ automated testing</li>
+</ul>
+</section>
+<section id="not-to-create-a-package" class="slide level2">
+<h2>not to create a package</h2>
+<ul>
+<li>Simple analyses and one-off projects</li>
+<li>Projects with few interdependencies and where <code>stopifnot</code> testing is sufficient</li>
+</ul>
+</section></section>
+<section id="environment-management-and-renv" class="title-slide slide level1 center">
+<h1>Environment management and <code>renv</code></h1>
+<ul>
+<li>R projects rely heavily on packages</li>
+<li>Changes to package versions may break code or change results</li>
+<li>Reproducibility requires keeping track of used packages and versions</li>
+</ul>
+</section>
+
+<section id="renv" class="title-slide slide level1 center">
+<h1><code>renv</code></h1>
+<ul>
+<li><code>renv</code> is a package that automates this</li>
+<li>Once installed, set up a new project with <code>renv::init()</code> and snapshots current packages in use in a <em>lockfile</em></li>
+<li><code>renv::snapshot()</code> updates currently used packages</li>
+<li><code>renv::restore()</code> will reinstall dependencies on a new machine or years in the future</li>
+</ul>
+</section>
+
+<section id="renv-1" class="title-slide slide level1 center">
+<h1><code>renv</code></h1>
+<ul>
+<li>You should use <code>renv</code> with your scripts, not in packages</li>
+<li><code>renv</code> will record the versions of packages you use</li>
+</ul>
+</section>
+
+<section id="exercise-set-up-renv-in-your-project" class="title-slide slide level1 center">
+<h1>Exercise: set up <code>renv</code> in your project</h1>
+<ul>
+<li>Install <code>renv</code> if needed</li>
+<li>Run <code>renv::init()</code></li>
+<li>Inspect <code>renv.lock</code></li>
+</ul>
+</section>
+
+<section id="renv-and-package-development" class="title-slide slide level1 center">
+<h1><code>renv</code> and package development</h1>
+<ul>
+<li><code>install()</code> installs your package system-wide</li>
+<li><code>renv</code> uses its own per-project library of packages</li>
+<li>To re-install your custom package, you need to run <code>renv::install("path/to/package/directory")</code> from within your <code>renv</code> environment (i.e.&nbsp;your project with scripts, not your package)</li>
+<li>Otherwise you will always have the version you had when you first ran <code>renv::init</code></li>
+<li>Since we haven’t discussed versioning or deploying packages to CRAN, <code>renv</code> can’t track custom packages</li>
+</ul>
+</section>
+
+<section id="additional-topics" class="title-slide slide level1 center">
+<h1>Additional topics</h1>
+<ul>
+<li>Version control</li>
+<li>Continuous integration</li>
+<li>Package versioning</li>
+<li>Publishing to CRAN</li>
+</ul>
+</section>
+
+<section>
+<section id="additional-resources" class="title-slide slide level1 center">
+<h1>Additional resources</h1>
+<ul>
+<li>R package book: <a href="https://r-pkgs.org/">r-pkgs.org</a></li>
+</ul>
+</section>
+<section id="contact" class="slide level2">
+<h2>Contact</h2>
+<p>Matt Bhagat-Conway<br> <a href="mailto:mwbc@unc.edu">mwbc@unc.edu</a></p>
+
+
+<img src="UNC_logo_RGB.png" class="slide-logo r-stretch"><div class="footer footer-default">
+
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1920,
+
+        height: 1080,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        setTimeout(function() {
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+        tippyHover(ref, function() {
+          var popup = window.document.createElement('div');
+          cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    });
+    </script>
+    
+
+</body></html>

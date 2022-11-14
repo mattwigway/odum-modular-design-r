@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html#to-create-a-package",
+    "href": "index.html#to-create-a-package",
+    "title": "Modular design and software development best practices in R",
+    "section": "to create a package",
+    "text": "to create a package\n\nWhen you are building reusable functions for a large project, or several projects\nWhen you want to employ automated testing"
+  },
+  {
+    "objectID": "index.html#not-to-create-a-package",
+    "href": "index.html#not-to-create-a-package",
+    "title": "Modular design and software development best practices in R",
+    "section": "not to create a package",
+    "text": "not to create a package\n\nSimple analyses and one-off projects\nProjects with few interdependencies and where stopifnot testing is sufficient"
+  },
+  {
+    "objectID": "index.html#contact",
+    "href": "index.html#contact",
+    "title": "Modular design and software development best practices in R",
+    "section": "Contact",
+    "text": "Contact\nMatt Bhagat-Conway mwbc@unc.edu"
+  }
+]
