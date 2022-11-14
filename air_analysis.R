@@ -23,7 +23,8 @@ data = left_join(data, rename(market_ids, OriginCity="Description"), by=c(Origin
 data = left_join(data, rename(market_ids, DestCity="Description"), by=c(DestCityMarketID="Code"))
 
 carriers = read_csv("data/L_CARRIERS.csv")
-data = left_join(data, rename(carriers, CarrierName="Description"), by=c(OpCarrier="Code"))
+data = left_join(data, rename(carriers, OperatingCarrierName="Description"), by=c(OpCarrier="Code"))
+data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=c(TkCarrier="Code"))
 
 # Now, we can see what the most popular air route is, by summing up the number of 
 # passengers carried.
