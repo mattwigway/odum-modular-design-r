@@ -545,7 +545,8 @@ create_package("~/git/airlinestats")
 - Put your `load_data` function in `load.R`
 - Put the functions to calculate market shares and route popularity in `analysis.R`
 - Put the symbolic constant `KILOMETERS_PER_MILE` in `analysis.R`
-- _Don't_ include `library(tidyverse)` anywhere
+- _Don't_ include `library(tidyverse)` anywhere or `source("load.R")`
+- Save the files in the `R` directory of your package 
 
 # Loading your package
 
