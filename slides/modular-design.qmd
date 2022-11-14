@@ -183,6 +183,9 @@ busiest_routes = function () {
 
 # Running our function
 
+- Running the code on the previous slide defines the function, but does not run it
+- We have to _call_ the function to run it
+
 ```{r}
 busiest_routes()
 ```
@@ -226,9 +229,8 @@ busiest_routes(data, Origin, Dest)
 - R tried to group by the columns `origcol` and `destcol`
 - These columns don't exist
 - We need to tell R that `origcol` and `destcol` aren't actually column names, but variables that contain column names
-- Any place we refer to a variable containing a column name, use the "embracing operator" `{{ variable }}` to tell R to use the value contained by `variable` as the column name
- . . .
-    - This is only true when the variable name would not usually be in quotes
+- Any place we refer to a variable containing a column name inside a function, use the "embracing operator" `{{ variable }}` to tell R to use the value contained by `variable` as the column name
+    - This is only true when the variable name would not usually be in quotes (`" or '`)
 
 # Adding arguments
 
@@ -296,6 +298,31 @@ busiest_routes(data, OriginCity, DestCity)
 - Use that function to compute market shares by operating carrier and ticketing carrier
 - Bonus: also compute market shares for individual airports instead of cities
 
+# Result
+
+```{r}
+market_shares = function (dataframe, carrier, city) {
+  mkt_shares = group_by(dataframe, {{ carrier }}, {{ city }}) %>%
+    summarize(Passengers=sum(Passengers)) %>%
+    group_by({{ city }}) %>%
+    mutate(market_share=Passengers/sum(Passengers), total_passengers=sum(Passengers)) %>%
+    ungroup()
+
+  res = filter(mkt_shares, total_passengers > 1000) %>% arrange(-market_share)
+  return(res)
+}
+
+```
+
+# Result
+
+```{r}
+market_shares(data, OperatingCarrierName, OriginCity)
+market_shares(data, TicketingCarrierName, OriginCity)
+market_shares(data, TicketingCarrierName, Origin)
+```
+
+
 # Symbolic constants
 
 - We still have the value `1.609` in our function to convert miles to kilometers
@@ -329,13 +356,36 @@ KILOMETERS_PER_MILE = 1.609
 
 - Let's make sure all of the passenger numbers are positive and non-NA
 - Add these lines to the start of your `busiest_routes` function:
-
 ```{r}
 #| eval: false
 stopifnot(all(dataframe$Passengers >= 1))
 stopifnot(all(!is.na(dataframe$Passengers)))
 ```
 
+```{r}
+#| include: false
+# redefine to add stopifnot
+busiest_routes = function (dataframe, origcol, destcol) {
+  stopifnot(all(dataframe$Passengers >= 1))
+  stopifnot(all(!is.na(dataframe$Passengers)))
+  pairs = group_by(dataframe, {{ origcol }}, {{ destcol }}) %>% summarize(Passengers=sum(Passengers), distance_km=first(Distance) * KILOMETERS_PER_MILE)
+  arrange(pairs, -Passengers)
+  
+  # we see that LAX-JFK (Los Angeles to New York Kennedy) is represented separately
+  # from JFK-LAX. We'd like to combine these two. Create airport1 and airport2 fields
+  # with the first and second airport in alphabetical order.
+  pairs = mutate(pairs, airport1 = if_else({{ origcol }} < {{ destcol }}, {{ origcol }}, {{ destcol }}), airport2 = if_else({{ origcol }} < {{ destcol }}, {{ destcol }}, {{ origcol }}))
+  pairs = group_by(pairs, airport1, airport2) %>% summarize(Passengers=sum(Passengers), distance_km=first(distance_km))
+  return(arrange(pairs, -Passengers))
+}
+```
+
+# Confirming that errors occur
+
+```{r}
+#| error: true
+busiest_routes(mutate(data, Passengers=-1), Origin, Dest)
+```
 
 # Using functions in multiple files
 
@@ -396,6 +446,13 @@ rm(data)
 
 data = load_data("../data/air_sample.csv", "../data/L_CITY_MARKET_ID.csv", "../data/L_CARRIERS.csv")
 ```
+
+# All data manipulation should be in code
+
+- I _never_ modify original data files, and rarely save new ones
+- I always write code or functions to make all the changes/cleaning I need
+- I run that function to load the data each time
+- This way I can always see what has been done to data
 
 # Creating R packages
 
@@ -458,6 +515,8 @@ An R source package is just a directory with a specific structure
 library(devtools)
 create_package("~/git/airlinestats")
 ```
+
+- A new RStudio window will open with the code for your new package
 
 # Adding R code to your package
 
@@ -573,6 +632,7 @@ use_import_from("magrittr", "%>%")
 
 # Confirm it worked
 
+- Re-run `load_all`
 - Run the two analyses again:
 
 ```{r}
@@ -620,7 +680,7 @@ check()
 - `Non-standard license specification`
     - R is suggesting you fill out the `DESCRIPTION` file, which includes choosing a license. We'll skip this for now.
 - `No visible branding` and `undefined global`
-    - These are the columns 
+    - These are the columns of our data; R doesn't know this when checking the code, though, and warns that they may be undefined
 
 # Installing the package
 
@@ -682,10 +742,10 @@ Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MA
 # Finishing up
 
 - Re-run the code using your package; it should work now
+- You may have to restart R
 
 # Automated testing
 
-- We all test our code informally
 - Automated testing formalizes testing and makes it repeatable
 - Every test is run automatically when you run `check()`
 - If you break something later, you are more likely to find out about it if your code has automated tests
@@ -791,7 +851,20 @@ test_file("tests/testthat/test-analysis.R")
 # Exercise
 
 - Check and reinstall your package
+- Notice that your tests were run
 - Confirm your scripts still work
+
+# When...
+
+## to create a package
+
+- When you are building reusable functions for a large project, or several projects
+- When you want to employ automated testing
+
+## not to create a package
+
+- Simple analyses and one-off projects
+- Projects with few interdependencies and where `stopifnot` testing is sufficient
 
 # Environment management and `renv`
 
@@ -821,7 +894,9 @@ test_file("tests/testthat/test-analysis.R")
 
 - `install()` installs your package system-wide
 - `renv` uses its own per-project library of packages
-- To install your custom package, you need to run `renv::install("path/to/package/directory")` from within your `renv` environment (i.e. your project with scripts, not your package)
+- To re-install your custom package, you need to run `renv::install("path/to/package/directory")` from within your `renv` environment (i.e. your project with scripts, not your package)
+- Otherwise you will always have the version you had when you first ran `renv::init`
+- Since we haven't discussed versioning or deploying packages to CRAN, `renv` can't track custom packages
 
 # Additional topics
 
