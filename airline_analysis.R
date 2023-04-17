@@ -12,7 +12,8 @@ data = read_csv("data/air_sample.csv")
 data[1:10,]
 
 # The data have seven columns: origin and destination airport, origin and destination cities
-# carrier, and distance. The city and carrier are coded, so we will merge in other 
+# carrier, and distance. The city and carrier are coded, so we will merge in other data
+# that has the human-readable names.
 # (the airports have codes as well, but these are fairly well known - e.g. RDU is
 # Raleigh-Durham and LAX is Los Angeles; we won't match those with the official airport
 # names)
