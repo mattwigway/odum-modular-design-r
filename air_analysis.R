@@ -28,14 +28,21 @@ data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=
 
 # Now, we can see what the most popular air route is, by summing up the number of 
 # passengers carried.
-pairs = group_by(data, Origin, Dest) %>% summarize(Passengers=sum(Passengers), distance_km=first(Distance) * 1.609)
+pairs = group_by(data, Origin, Dest) %>%
+  summarize(Passengers=sum(Passengers), distance_km=first(Distance) * 1.609)
 arrange(pairs, -Passengers)
 
 # we see that LAX-JFK (Los Angeles to New York Kennedy) is represented separately
 # from JFK-LAX. We'd like to combine these two. Create airport1 and airport2 fields
 # with the first and second airport in alphabetical order.
-pairs = mutate(pairs, airport1 = if_else(Origin < Dest, Origin, Dest), airport2 = if_else(Origin < Dest, Dest, Origin))
-pairs = group_by(pairs, airport1, airport2) %>% summarize(Passengers=sum(Passengers), distance_km=first(distance_km))
+pairs = mutate(
+  pairs, airport1 = if_else(Origin < Dest, Origin, Dest),
+  airport2 = if_else(Origin < Dest, Dest, Origin)
+)
+
+pairs = group_by(pairs, airport1, airport2) %>%
+  summarize(Passengers=sum(Passengers), distance_km=first(distance_km))
+
 arrange(pairs, -Passengers)
 
 # This may be misleading, however, as some metropolitan areas have only one airport
@@ -44,11 +51,13 @@ arrange(pairs, -Passengers)
 # groups these airports together.
 # Now, we can see what the most popular air route is, by summing up the number of 
 # passengers carried.
-pairs = group_by(data, OriginCity, DestCity) %>% summarize(Passengers=sum(Passengers), distance_km=first(Distance) * 1.609)
+pairs = group_by(data, OriginCity, DestCity) %>%
+  summarize(Passengers=sum(Passengers), distance_km=first(Distance) * 1.609)
 
 pairs = mutate(pairs,
                city1 = if_else(OriginCity < DestCity, OriginCity, DestCity),
                city2 = if_else(OriginCity < DestCity, DestCity, OriginCity))
 
-pairs = group_by(pairs, city1, city2) %>% summarize(Passengers=sum(Passengers), distance_km=first(distance_km) * 1.609)
+pairs = group_by(pairs, city1, city2) %>%
+  summarize(Passengers=sum(Passengers), distance_km=first(distance_km) * 1.609)
 arrange(pairs, -Passengers)
