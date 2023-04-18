@@ -319,7 +319,14 @@ market_shares = function (dataframe, carrier, city) {
 
 ```{r}
 market_shares(data, OperatingCarrierName, OriginCity)
+```
+
+---
+```{r}
 market_shares(data, TicketingCarrierName, OriginCity)
+```
+---
+```{r}
 market_shares(data, TicketingCarrierName, Origin)
 ```
 
@@ -541,10 +548,11 @@ create_package("~/git/airlinestats")
 
 # Adding R code to your `airlinestats` package
 
-- Create two `.R` files, `load.R` and `analysis.R`
+- Create three `.R` files, `load.R`, `analysis.R`, and `constants.R`
 - Put your `load_data` function in `load.R`
 - Put the functions to calculate market shares and route popularity in `analysis.R`
-- Put the symbolic constant `KILOMETERS_PER_MILE` in `analysis.R`
+- Put the symbolic constant `KILOMETERS_PER_MILE` in `constants.R`
+    - Good practice to put your constants in one file so they don't get defined in multiple places accidentally
 - _Don't_ include `library(tidyverse)` anywhere or `source("load.R")`
 - Save the files in the `R` directory of your package 
 
