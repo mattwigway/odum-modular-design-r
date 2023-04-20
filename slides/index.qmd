@@ -868,6 +868,29 @@ test_file("tests/testthat/test-analysis.R")
 - Notice that your tests were run
 - Confirm your scripts still work
 
+# Including data in tests
+
+- Sometimes, you'll need to include toy datasets to use with your tests
+- Let's write a new test for the `busiest_routes` function, to make sure it identifies the busiest routes
+- We'll make a toy dataset to work with
+
+# Including data in tests
+
+- Put data files in `inst/extdata`
+- Call it `passengers.csv`
+
+```
+from,to,Passengers
+SFO,JFK,2
+RDU,CLT,3
+JFK,SFO,2
+```
+
+# Writing the test
+
+- Write a test that reads the data in and tests that `busiest_routes` returns JFK->SFO as the busiest route
+- You can get the path to your `passengers.csv` file with `system.file("extdata", "passengers.csv", package="airlinestats")`
+
 # When...
 
 ## to create a package
@@ -1007,7 +1030,7 @@ test_file("tests/testthat/test-analysis.R")
 
 # Changes to `renv.lock`
 
-```{json}
+```
     "airlinestats2": {
       "Package": "airlinestats2",
       "Version": "0.0.0.9000",
@@ -1102,7 +1125,7 @@ Error: Error: R CMD check found WARNINGs
 - We want to ignore those for now
 - In your `check-release.yaml` file, add this below the line that says to use `check-r-package`
 
-```{yaml}
+```
 with:
     error-on: '"error"'
 ```
@@ -1139,29 +1162,6 @@ with:
 
 - Change the test to use percentages, and push to your branch
 - Note that the pull request now shows that all tests pass
-
-# Including data in tests
-
-- Sometimes, you'll need to include toy datasets to use with your tests
-- Let's write a new test for the `busiest_routes` function, to make sure it identifies the busiest routes
-- We'll make a toy dataset to work with
-
-# Including data in tests
-
-- Put data files in `inst/extdata`
-- Call it `passengers.csv`
-
-```
-from,to,Passengers
-SFO,JFK,2
-RDU,CLT,3
-JFK,SFO,2
-```
-
-# Writing the test
-
-- Write a test that reads the data in and tests that `busiest_routes` returns JFK->SFO as the busiest route
-- You can get the path to your `passengers.csv` file with `system.file("extdata", "passengers.csv", package="airlinestats")`
 
 # Documentation
 
@@ -1256,7 +1256,7 @@ JFK,SFO,2
 # Markdown
 
 - Markdown is a simple text formatting language
-```{markdown}
+```
 # Heading 1
 ## Heading 2
 ###### Heading 6
@@ -1279,7 +1279,7 @@ _italic_
 
 # Writing a vignette for our package
 
-```{yaml}
+```
 ---
 title: "market_share_calculation"
 output: rmarkdown::html_vignette
@@ -1301,7 +1301,8 @@ vignette: >
 ```{r}
 data = dplyr::tibble(
     Origin=c("RDU", "RDU", "CLT", "CLT", "CLT"),
-    OperatingCarrierName = c("Southwest", "Delta", "American", "American", "Piedmont")
+    OperatingCarrierName = c("Southwest", "Delta", "American", "American", "Piedmont"),
+    Passengers=rep(1, 5)
 )
 
 market_shares(data, Origin, OperatingCarrierName)
