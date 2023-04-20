@@ -1,6 +1,6 @@
 ---
-title: Modular design and software development best practices in R
-institute: Odum Institute<br/>University of North Carolina at Chapel Hill
+title: "Modular design and software development best practices in R"
+institute: "Odum Institute<br/>University of North Carolina at Chapel Hill"
 format:
     revealjs:
         theme: [default, unc.scss]
@@ -8,7 +8,8 @@ format:
         height: 1080
         logo: UNC_logo_RGB.png
         slide-number: true
-execute: 
+        footer: "https://go.unc.edu/modulardesign"
+execute:
   include: true
   echo: true
 ---
@@ -321,11 +322,14 @@ market_shares = function (dataframe, carrier, city) {
 market_shares(data, OperatingCarrierName, OriginCity)
 ```
 
----
+# Result
+
 ```{r}
 market_shares(data, TicketingCarrierName, OriginCity)
 ```
----
+
+# Result
+
 ```{r}
 market_shares(data, TicketingCarrierName, Origin)
 ```
@@ -876,9 +880,34 @@ test_file("tests/testthat/test-analysis.R")
 - Simple analyses and one-off projects
 - Projects with few interdependencies and where `stopifnot` testing is sufficient
 
+# How to use your package
+
+- Two ways to use your package: through `install` and through devtools `load_all`
+- `install` is the "right" way to use packages
+    - load with `library()`, just like any other package
+- `load_all` has advantages, though
+    - Always in sync with your code - no installation step needed
+
+# Writing scripts using your package
+
+- Scripts can be in your package directory or elsewhere
+    - Just don't put them in your `R` directory
+- If you're installing your package, you can load it in your scripts with `library`
+- Otherwise, load it with `devtools::load_all()`
+
+# Where to put your scripts
+
+- Single-project package - keep them in the same directory as the package
+- Multiple-project package - have a separate directory/repository for each project using the package
+
+# Exercise
+
+- Move your analysis scripts into your package directory
+- Replace `library(airlinestats)` with `devtools::load_all()` to load the package
+
 # Environment management and `renv`
 
-- R projects rely heavily on packages
+- R projects rely heavily on outside packages
 - Changes to package versions may break code or change results
 - Reproducibility requires keeping track of used packages and versions
 
@@ -889,35 +918,446 @@ test_file("tests/testthat/test-analysis.R")
 - `renv::snapshot()` updates currently used packages
 - `renv::restore()` will reinstall dependencies on a new machine or years in the future
 
-# `renv`
-
-- You should use `renv` with your scripts, not in packages
-- `renv` will record the versions of packages you use
-
 # Exercise: set up `renv` in your project
 
 - Install `renv` if needed
 - Run `renv::init()`
 - Inspect `renv.lock`
 
+# `renv.lock`
+
+- Records the exact versions of all packages used
+- Allows `renv` to reproduce the environment exactly on another machine or in the future
+
+# `renv.lock`
+
+{{< include renvlock.qmd >}}
+
+#  `renv` environments
+
+- Your `renv` environment is specific to each project
+- Installing or upgrading a package in a project managed by `renv` will not affect any other projects on your computer
+
+# Updating an `renv` environment
+
+- You can install packages in `renv` just like you normally would, with `install.packages`
+    - `renv::install` works as well
+- When you add or remove packages, run `renv::snapshot` to update the lockfile
+- By default, the lockfile will reflect all the packages you use in your code (via `library()`, `package::method()`, etc.), and all the packages they depend on
+    - Won't include installed but unused packages
+
+# Restoring an environment
+
+- `renv::restore()` will read a lockfile and (try to) restore exactly the packages used
+    - This may fail if the packages are no longer available
+    - CRAN does not keep older binary packages, so older packages may need to be built from source
+- Don't do this now, since your environment is already set up
+
 # `renv` and package development
 
-- `install()` installs your package system-wide
-- `renv` uses its own per-project library of packages
-- To re-install your custom package, you need to run `renv::install("path/to/package/directory")` from within your `renv` environment (i.e. your project with scripts, not your package)
-- Otherwise you will always have the version you had when you first ran `renv::init`
-- Since we haven't discussed versioning or deploying packages to CRAN, `renv` can't track custom packages
+- If you're keeping your scripts in your package repository, feel free to use `renv`
+- If your package is used by multiple projects, you want to use `renv` with each individual project
+    - Those projects might require additional dependencies
+    - Packages intended for reuse will need to coexist with other packages - if two packages used renv and requested different versions of (say) dplyr, that would be an issue
 
-# Additional topics
+# `renv` and a project-based workflow
 
-- Version control
-- Continuous integration
-- Package versioning
-- Publishing to CRAN
+- `renv` encourages you to think of your R projects as separate, logical entities
+- If you're using `renv`, you can't ever switch projects without also restarting R
+    - This is a good thing
+- Using a [project-based workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/) lets you make your code portable between machines
+- Key points: avoid `setwd`, `rm(list=ls())`, and saving `.RData`
+
+# `renv` and a project-based workflow
+
+- Avoid absolute file paths (`/Users/...`, `C:\...`, `~/...`)
+- These will only work on your machine
+- Use a project-relative path (`data/file.csv`)
+- If your data is not in the same directory as your code, have a constant that specifies where to find the data, so you only have to edit it once
+- Then use `file.path(DATA_DIR, "file.csv")` etc.
+
+# `renv` and version control
+
+- You should check `renv.lock` and your `renv/` directory into version control
+    - not `renv/library` if you have it, this contains the actual packages
+    - should be ignored automatically by Git
+
+# Sharing your project with others (or yourself)
+
+- Easiest way to share your project with your team is through Github
+- You should be using version control with your project anyhow
+
+# Exercise
+
+- Commit your project to git and post it to github
+- Add `.Rhistory` to `.gitignore` so we don't accidentally commit it
+    - It could contain passwords, etc, entered at the R command prompt
+- Make the repository public for now
+
+
+# Installing your package elsewhere
+
+- Go back to your original `odum-modular-r` R project
+- Set up `renv`
+- Install your package from GitHub
+    - `renv::install("username/repository")`
+    - You may need to remove any `library(airlinestats)` lines of code, and remove the `airlinestats` package if you installed it earlier
+- Rewrite your code to use the `airlinestats` package
+- Run `renv::snapshot` to save the `airlinestats` dependency
+
+# Changes to `renv.lock`
+
+```{json}
+    "airlinestats2": {
+      "Package": "airlinestats2",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mattwigway",
+      "RemoteRepo": "airlinestats2-dev",
+      "RemoteRef": "main",
+      "RemoteSha": "2ccb511cf76bbcbd7848caa435d3fa83fb208b3c",
+      "Requirements": [
+        "dplyr",
+        "magrittr",
+        "readr"
+      ],
+      "Hash": "a6337efc770d7b608152db75cda76944"
+    }
+```
+
+# Benefits of installing this way vs. using `install()`
+
+- `renv` saved the commit ID in your lockfile
+- When you run `renv::restore`, you will get that exact commit
+- Your own packages probably change more frequently and dramatically than any other packages you use
+- It makes sense to track the versions of your packages even more than tracking the version of other packages
+- If you use `install()`, code might work on one machine but not another because of different installed library versions
+- This method does not require explicitly downloading the package source on each machine
+
+# Collaborating with others
+
+- Anyone can run `renv::install("user/package")` and get your package
+- If you're tagging releases, `renv::install("user/package@tag")` will get that version
+- `renv::update("packagename")` to update
+    - not `user/package`, but the package name you'd put in `library()`
+
+# Using private Github repositories
+
+- Oftentimes you don't want to share your research code with the world (yet)
+- If you use a private Github repository, you need to authenticate to install packages from it
+- You'll need to create a Github _personal access token_ and put it in the environment variable `GITHUB_PAT`
+- On Github, create under Settings -> Developer -> Personal Access Tokens
+- Put `GITHUB_PAT=token` in your `~/.Renviron` file
+    - the one in your home directory, not the one in your project - you don't want to accidentally commit your access token
+
+# Continuous integration
+
+- We've been writing automated tests, but we have to run them manually
+- Realistically, you're probably not going to do this very often
+- You could miss broken tests for a long time
+- If you're using Github, we can set it up to run your tests on every push
+
+# Continuous integration
+
+- This is particularly valuable if you're using branches for development (you should)
+- When you create a pull request, [Github will display whether the tests pass before you merge](https://github.com/mattwigway/TransitRouter.jl/pull/25)
+
+# Setting up continuous integration
+
+- Continuous integration is set up through [Github Actions](https://github.com/actions)
+- You add a workflow file in the `.github/workflows` directory
+
+# Setting up continuous integration
+
+- `usethis` provides continuous integration templates
+- Run `usethis::use_github_action("check-release")`
+- Inspect the file in `.github/workflows`
+
+# Setting up continuous integration
+
+- Commit your `.github` directory and push to github
+
+# See if it worked
+
+- Browse to your repository on Github. Look for the brown dot to indicate workflows are running to the right of the commit message.
+
+# Fixing the errors
+
+```
+  Found the following hidden files and directories:
+Error: Error: R CMD check found WARNINGs
+    .github
+  These were most likely included in error.
+```
+
+- R is warning us that the `.github` directory was included in our package when it didn't need to be
+- We can add `.github` to `.Rbuildignore` to let R know that this folder isn't part of the package
+- Commit and push again
+
+# Two more warnings
+
+- We still get warnings about the license specification and documentation
+- We want to ignore those for now
+- In your `check-release.yaml` file, add this below the line that says to use `check-r-package`
+
+```{yaml}
+with:
+    error-on: '"error"'
+```
+
+# Two more warnings
+
+- This will suppress warnings
+- The quoting is important - using double quotes inside single quotes
+- Not a good practice in general, and we'll return to it later
+- But will allow our package to build for now
+- Commit and push the updated file
+
+# Using `renv` with CI
+
+- To have Github install the exact packages we're using into the CI environment, we need to make one change
+- Swap out the `setup-r-dependencies` section of your workflow for `setup-renv`
+- No need to include `with: ` or the variables below it
+- Commit and push
+
+# CI and branch-based development
+
+- CI is especially useful working with a team
+- CI will run on each pull request, and show if tests pass
+
+# Break a test
+
+- Let's make sure our CI is working
+- One of our tests confirms that market shares sum to 1
+- Let's change our code to report market shares as percentages, but not change the test
+- Do this on a branch, and push that branch to Github
+- Create a pull request from that branch
+
+# Fix the test
+
+- Change the test to use percentages, and push to your branch
+- Note that the pull request now shows that all tests pass
+
+# Including data in tests
+
+- Sometimes, you'll need to include toy datasets to use with your tests
+- Let's write a new test for the `busiest_routes` function, to make sure it identifies the busiest routes
+- We'll make a toy dataset to work with
+
+# Including data in tests
+
+- Put data files in `inst/extdata`
+- Call it `passengers.csv`
+
+```
+from,to,Passengers
+SFO,JFK,2
+RDU,CLT,3
+JFK,SFO,2
+```
+
+# Writing the test
+
+- Write a test that reads the data in and tests that `busiest_routes` returns JFK->SFO as the busiest route
+- You can get the path to your `passengers.csv` file with `system.file("extdata", "passengers.csv", package="airlinestats")`
+
+# Documentation
+
+- R previously complained that we didn't have documentation for our exported functions
+- It's a good practice to document all of our externally-facing functions
+- The roxygen2 system allows us to do this right in our R code
+
+# Roxygen2 comments
+
+```{r}
+#' Compute carrier market shares by airport
+#'
+#' This function computes the market share of each carrier at each airport.
+#'
+#' The carrier and airport columns can be specified manually, so ticketing or operating
+#' carrier can be used (or another carrier column, if you had one---for instance, mainline
+#' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
+#' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
+#'
+#' @param dataframe data to use
+#' @param carriercol column of data frame that specifies carrier
+#' @param origincol column of data frame that specifies airport
+#'
+#' @returns dataset containing market shares by airline and airport
+#'
+#' @export
+```
+
+# Roxygen2 comment anatomy: title
+
+```{r}
+#' Compute carrier market shares by airport
+```
+
+# Roxygen2 comment anatomy: description
+
+```{r}
+#' This function computes the market share of each carrier at each airport.
+```
+
+# Roxygen2 comment anatomy: details
+
+```{r}
+#' The carrier and airport columns can be specified manually, so ticketing or operating
+#' carrier can be used (or another carrier column, if you had one---for instance, mainline
+#' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
+#' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
+```
+
+# Roxygen2 comment anatomy: arguments (parameters)
+
+```{r}
+#' @param dataframe data to use
+#' @param carriercol column of data frame that specifies carrier
+#' @param origincol column of data frame that specifies airport
+```
+
+# Roxygen2 comment anatomy: return value
+
+```{r}
+#' @returns dataset containing market shares by airline and airport
+```
+
+# Roxygen2 comment anatomy: export
+
+```{r}
+#' @export
+```
+
+# Building the documentation
+
+- Add a roxygen2 comment to the `market_shares` function
+- Build documentation with `document()`
+- Notice that a new folder, `man` (manual), has appeared
+- Reload package with `devtools::load_all()`
+- Run `?market_shares`
+
+# Exercise
+
+- Document `busiest_routes` and `load_data`
+- Build the documentation and reload the module
+
+# The `man` folder and git
+
+- It's typical to commit the `man` folder to git, which means you need to run `document()` before committing changes to your repository
+
+# Vignettes
+
+- The other common form of documentation for R packages is a vignette
+- Prose documents written as R markdown files
+
+# Markdown
+
+- Markdown is a simple text formatting language
+```{markdown}
+# Heading 1
+## Heading 2
+###### Heading 6
+
+_italic_
+**bold**
+
+[link text](link url)
+```
+
+# R Markdown
+
+- R Markdown allows embedding R code in markdown, between ` ```{r} ` and ` ``` `
+- Embedded R code will be executed, and outputs placed in the document
+
+# Writing a vignette for our package
+
+- Run `usethis::use_vignette("airlinestats")` to create the vignette
+    - "airlinestats" is the name of the vignette. You might have many vignettes with different names, rather than a single one matching the name of your package
+
+# Writing a vignette for our package
+
+```{yaml}
+---
+title: "market_share_calculation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{market_share_calculation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```
+
+# Writing text
+
+- You can write text simply as text - with markdown formatting as needed
+
+# Including code in the vignette
+
+- Include the following code in your vignette, surrounded by ` ```{r} ` and ` ``` `
+
+```{r}
+data = dplyr::tibble(
+    Origin=c("RDU", "RDU", "CLT", "CLT", "CLT"),
+    OperatingCarrierName = c("Southwest", "Delta", "American", "American", "Piedmont")
+)
+
+market_shares(data, Origin, OperatingCarrierName)
+```
+
+# Previewing your vignette
+
+- Run `devtools::build_rmd("vignettes/your-vignette.Rmd")`
+
+# Using your vignette
+
+- Once your package is installed, you can also see the vignette with `vignette("vignette_name", package="package_name")` or `browseVignettes("packagename")`
+
+# Fixing the license
+
+- The last warning we had from the CI was that our package uses a non-standard license
+- There are two ways to specify a license in R
+- A [standard license](https://usethis.r-lib.org/reference/licenses.html), which is a code for one of several common Open Source licenses
+- A custom license, which might be "all rights reserved" or some other open-source license not specified
+
+# Fixing the license
+
+- We'll use a proprietary license for now
+    - Or if you prefer an open source one
+- `usethis::use_proprietary_license("your name")`
+
+# Re-enabling warnings
+
+- Remove the lines you added above about erroring on warnings in your workflow
+
+# Test it out
+
+- Commit and push everything to github
+- CI should pass
+
+# Bringing it full circle
+
+- Return to your original R project (where we used `renv::install`)
+- Run `renv::update("username/repo")`
+- Run `library(airlinestats)`
+- Run `?market_shares`
+
+# Fix the error
+
+- Add `- uses: r-lib/actions/setup-pandoc@v2` to your workflow to allow it to build your RMarkdown vignettes
+
+# Vignettes and installing from Github
+
+- Vignettes are not built when installing from github, to save time
+- Best way to see vignettes is to [create a website for your package](https://r-pkgs.org/website.html)
+- Vignettes are mostly for packages you expect many others to use
 
 # Additional resources
 
 - R package book: [r-pkgs.org](https://r-pkgs.org/)
+- R Github Actions documentation: [github.com/r-lib/actions](https://github.com/r-lib/actions)
 
 ## Contact
 
