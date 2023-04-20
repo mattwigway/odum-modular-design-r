@@ -547,7 +547,7 @@
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">calculate_cylinder_volume</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 6.28318</code></pre>
+<pre><code>[1] 6.283185</code></pre>
 </div>
 </div>
 </div>
@@ -1560,10 +1560,10 @@ Column `destcol` is not found.</code></pre>
 <li>Put data files in <code>inst/extdata</code></li>
 <li>Call it <code>passengers.csv</code></li>
 </ul>
-<pre><code>from,to,Passengers
-SFO,JFK,2
-RDU,CLT,3
-JFK,SFO,2</code></pre>
+<pre><code>from,to,Passengers,Distance
+SFO,JFK,2,2586
+RDU,CLT,3,130
+JFK,SFO,2,2586</code></pre>
 </section>
 
 <section id="writing-the-test" class="title-slide slide level1 center">
@@ -4338,7 +4338,7 @@ vignette: &gt;
 <h1>Bringing it full circle</h1>
 <ul>
 <li>Return to your original R project (where we used <code>renv::install</code>)</li>
-<li>Run <code>renv::update("username/repo")</code></li>
+<li>Run <code>renv::update("packagename")</code></li>
 <li>Run <code>library(airlinestats)</code></li>
 <li>Run <code>?market_shares</code></li>
 </ul>
