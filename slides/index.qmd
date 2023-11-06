@@ -880,10 +880,10 @@ test_file("tests/testthat/test-analysis.R")
 - Call it `passengers.csv`
 
 ```
-from,to,Passengers
-SFO,JFK,2
-RDU,CLT,3
-JFK,SFO,2
+from,to,Passengers,Distance
+SFO,JFK,2,2586
+RDU,CLT,3,130
+JFK,SFO,2,2586
 ```
 
 # Writing the test
@@ -1341,7 +1341,7 @@ market_shares(data, Origin, OperatingCarrierName)
 # Bringing it full circle
 
 - Return to your original R project (where we used `renv::install`)
-- Run `renv::update("username/repo")`
+- Run `renv::update("packagename")`
 - Run `library(airlinestats)`
 - Run `?market_shares`
 
