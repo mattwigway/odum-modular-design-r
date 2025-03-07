@@ -31,14 +31,14 @@ data = left_join(data, rename(carriers, OperatingCarrierName="Description"), by=
 data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=c(TkCarrier="Code"))
 ```
 
-# About me
+## About me
 
 - Assistant Professor of City and Regional Planning
     - Research focus: transportation modeling and simulation
 - Quantitative Methods Consultant at Odum
 - Three years as a software developer before graduate school
 
-# Why this matters
+## Why this matters
 
 - Code is increasingly common in research
 - Most academics receive little to no formal training in software development
@@ -47,53 +47,53 @@ data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=
     - Errors in code
     - Non-reproducible analyses
 
-# What we'll be doing today
+## What we'll be doing today
 
 - Hands-on exercise converting a set of R scripts a modular and tested format
 - Two scripts that analyze data on airline tickets from the Bureau of Transportation Statistics
 - Script download: [https://github.com/mattwigway/odum-modular-design-r](https://github.com/mattwigway/odum-modular-design-r)
 - These slides: [https://projects.indicatrix.org/odum-modular-design-r](https://projects.indicatrix.org/odum-modular-design-r)
 
-# The two scripts
+## The two scripts
 
 - Both load and clean the air ticket data
 - One analyzes the busiest air routes in the country
 - One looks at airline "fortress hubs"---which airports have the most concentrated service from a single airline
 
-# What we'll address
+## What we'll address
 
 - Duplicated code
 - Literal numeric values
 - Automated tests
 - Package version incompatibilities
 
-# What we won't address
+## What we won't address
 
 - Version control
     - Odum offers separate Git and Github class
 
-# `air_analysis.R`
+## `air_analysis.R`
 
 - Hands-on walkthrough of file
 
-# `airline_analysis.R`
+## `airline_analysis.R`
 
 - Hands-on walkthrough of file
 
-# Duplicated code (don't repeat yourself)
+## Duplicated code (don't repeat yourself)
 
 - Common software development rule: don't repeat yourself (DRY)
 - In `air_analysis.R` we do the same analysis twice, once by airport and once by city
 - We can eliminate this duplicated code using a _function_
 
-# Functions
+## Functions
 
 - A function is a reusable piece of code that can be executed many times
 - Functions separate the _definition_ of code from the _execution_
 - You use functions all the time
     - For instance, `sum()` is a function
 
-# Anatomy of a function
+## Anatomy of a function
 
 - Functions are R code that is given a name to be referred to later
 - Functions have three main components
@@ -104,7 +104,7 @@ data = left_join(data, rename(carriers, TicketingCarrierName="Description"), by=
     - Return value
         - The result of the function
 
-# Anatomy of a function
+## Anatomy of a function
 
 
 ```{r}
@@ -122,7 +122,7 @@ calculate_cylinder_volume = function (radius, height) {
     - `return` ends the function, any code after `return` will not be run
 :::
 
-# Using functions
+## Using functions
 
 - Code above _defines_ the function
 - It doesn't run any of the function code
@@ -134,12 +134,12 @@ calculate_cylinder_volume = function (radius, height) {
 calculate_cylinder_volume(1, 2)
 ```
 
-# Defining functions in `air_analysis.R`
+## Defining functions in `air_analysis.R`
 
 - The analysis is repeated twice, once by airport pairs and once by city pairs
 - We will re-write this analysis into a function, and use the same code twice
 
-# Defining functions in `air_analysis.R`
+## Defining functions in `air_analysis.R`
 
 ```{r}
 #| output: false
@@ -158,7 +158,7 @@ pairs = group_by(pairs, airport1, airport2) %>% summarize(
 arrange(pairs, -Passengers)
 ```
 
-# Step one: make it a function
+## Step one: make it a function
 
 - Wrap code in `function () {...}` and add a return value
     - If you don't have a `return()` R will return the result of the last line
@@ -183,7 +183,7 @@ busiest_routes = function () {
 }
 ```
 
-# Running our function
+## Running our function
 
 - Running the code on the previous slide defines the function, but does not run it
 - We have to _call_ the function to run it
@@ -192,12 +192,12 @@ busiest_routes = function () {
 busiest_routes()
 ```
 
-# Adding arguments
+## Adding arguments
 
 - We want to make the `Origin` and `Dest` column names arguments to the function
 - It's also standard to make the data itself and anything else you refer to inside the function arguments
 
-# Adding arguments
+## Adding arguments
 
 ```{r}
 #| output: false
@@ -219,14 +219,14 @@ busiest_routes = function (dataframe, origcol, destcol) {
 }
 ```
 
-# Adding arguments
+## Adding arguments
 
 ```{r}
 #| error: true
 busiest_routes(data, Origin, Dest)
 ```
 
-# What happened?
+## What happened?
 
 - R tried to group by the columns `origcol` and `destcol`
 - These columns don't exist
@@ -234,7 +234,7 @@ busiest_routes(data, Origin, Dest)
 - Any place we refer to a variable containing a column name inside a function, use the "embracing operator" `{{ variable }}` to tell R to use the value contained by `variable` as the column name
     - This is only true when the variable name would not usually be in quotes (`" or '`)
 
-# Adding arguments
+## Adding arguments
 
 ```{r}
 #| output: false
@@ -256,19 +256,19 @@ busiest_routes = function (dataframe, origcol, destcol) {
 }
 ```
 
-# Adding arguments
+## Adding arguments
 
 ```{r}
 busiest_routes(data, Origin, Dest)
 ```
 
-# Using our function for cities
+## Using our function for cities
 
 ```{r}
 busiest_routes(data, OriginCity, DestCity)
 ```
 
-# Putting it all together
+## Putting it all together
 
 ```{r}
 #| output: false
@@ -294,13 +294,13 @@ busiest_routes(data, Origin, Dest)
 busiest_routes(data, OriginCity, DestCity)
 ```
 
-# Exercise: do the same in `airline_analysis.R`
+## Exercise: do the same in `airline_analysis.R`
 
 - Write a function to compute market shares
 - Use that function to compute market shares by operating carrier and ticketing carrier
 - Bonus: also compute market shares for individual airports instead of cities
 
-# Result
+## Result
 
 ```{r}
 market_shares = function (dataframe, carrier, city) {
@@ -316,26 +316,26 @@ market_shares = function (dataframe, carrier, city) {
 
 ```
 
-# Result
+## Result
 
 ```{r}
 market_shares(data, OperatingCarrierName, OriginCity)
 ```
 
-# Result
+## Result
 
 ```{r}
 market_shares(data, TicketingCarrierName, OriginCity)
 ```
 
-# Result
+## Result
 
 ```{r}
 market_shares(data, TicketingCarrierName, Origin)
 ```
 
 
-# Symbolic constants
+## Symbolic constants
 
 - We still have the value `1.609` in our function to convert miles to kilometers
 - It's a bad practice to have literal values like these in your code
@@ -343,13 +343,13 @@ market_shares(data, TicketingCarrierName, Origin)
     - Difficult to change (maybe you want to increase accuracy later by changing it to `1.609344`)
     - Numbers used in many places can be prone to typos
 
-# Symbolic constants
+## Symbolic constants
 
 - We can define a _constant variable_ in our file that contains the value `1.609`, and refer to it when needed
 - By convention, constants are all uppercase, and usually appear near the start of the file
 - R does not enforce variables being constant, you could change them in other code, but you shouldn't
 
-# Symbolic constants
+## Symbolic constants
 
 - Near the top of your code file, add
 
@@ -359,12 +359,12 @@ KILOMETERS_PER_MILE = 1.609
 
 - Replace `1.609` in your function with `KILOMETERS_PER_MILE`
 
-# Runtime checks: `stopifnot`
+## Runtime checks: `stopifnot`
 
 - A first step towards ensuring correctness is to add checks throughout your code
 - In R, this is most easily done with the `stopifnot` function - this will error if whatever condition it checks is not true
 
-# Runtime checks: `stopifnot`
+## Runtime checks: `stopifnot`
 
 - Let's make sure all of the passenger numbers are positive and non-NA
 - Add these lines to the start of your `busiest_routes` function:
@@ -376,7 +376,7 @@ stopifnot(all(!is.na(dataframe$Passengers)))
 
 ```{r}
 #| include: false
-# redefine to add stopifnot
+## redefine to add stopifnot
 busiest_routes = function (dataframe, origcol, destcol) {
   stopifnot(all(dataframe$Passengers >= 1))
   stopifnot(all(!is.na(dataframe$Passengers)))
@@ -392,14 +392,14 @@ busiest_routes = function (dataframe, origcol, destcol) {
 }
 ```
 
-# Confirming that errors occur
+## Confirming that errors occur
 
 ```{r}
 #| error: true
 busiest_routes(mutate(data, Passengers=-1), Origin, Dest)
 ```
 
-# Using functions in multiple files
+## Using functions in multiple files
 
 - Often we may want to use functions in multiple files
 - For instance, we use the same data loading code in both `air_analysis.R` and `airline_analysis.R`
@@ -407,14 +407,14 @@ busiest_routes(mutate(data, Passengers=-1), Origin, Dest)
 - `source()` will run the code in a file and make all of the functions and variables available
 - Just as if that code was pasted into each source file
 
-# Creating a data cleaning function
+## Creating a data cleaning function
 
 - Create a function that takes arguments for the file names of the dataset and the two tables that are joined to it,
 - performs the data cleaning/processing,
 - and returns the final dataset
 - Save this function to a new file in the same directory as the others
 
-# Using your data cleaning function
+## Using your data cleaning function
 
 - Delete the data loading code in each of the analysis files
 - Use the 🧹 button in RStudio to clear the data from memory
@@ -426,7 +426,7 @@ busiest_routes(mutate(data, Passengers=-1), Origin, Dest)
 data = load_data("data/air_sample.csv", "data/L_CITY_MARKET_ID.csv", "data/L_CARRIERS.csv")
 ```
 
-# The finished function
+## The finished function
 
 Yours might not look exactly the same, and that's okay
 
@@ -453,31 +453,31 @@ load_data = function(data_file, city_file, carrier_file) {
 
 ```{r}
 #| include: false
-# run this just to make sure function above works
+## run this just to make sure function above works
 rm(data)
 
 data = load_data("../data/air_sample.csv", "../data/L_CITY_MARKET_ID.csv", "../data/L_CARRIERS.csv")
 ```
 
-# All data manipulation should be in code
+## All data manipulation should be in code
 
 - I _never_ modify original data files, and rarely save new ones
 - I always write code or functions to make all the changes/cleaning I need
 - I run that function to load the data each time
 - This way I can always see what has been done to data
 
-# Creating R packages
+## Creating R packages
 
 - You use packages all the time when you use R
     - Any time you run `library(...)` you're loading a package
 - You can also create packages yourself
 
-# Advantages of creating a package
+## Advantages of creating a package
 
 - Easy to share code, even between projects (no copying .R files to load with `source()`)
 - Packages facilitate automated testing
 
-# Creating an R package
+## Creating an R package
 
 - Several packages are available that make creating your own packages _much_ easier
     - `devtools` for overall workflow management
@@ -489,18 +489,18 @@ data = load_data("../data/air_sample.csv", "../data/L_CITY_MARKET_ID.csv", "../d
 install.packages(c("devtools", "roxygen2", "testthat"))
 ```
 
-# What is an R package?
+## What is an R package?
 
 - A collection of functions, data, and documentation that can be easily installed in R and available to all R scripts
 
-# Structure of an R package
+## Structure of an R package
 
 - R packages are created in _source_ form
 - This just means that they consist of the original R code
 - When you install a package, it is converted to _binary_ form
     - Only readable by the computer, and ready to be run by R
 
-# Structure of an R package
+## Structure of an R package
 
 An R source package is just a directory with a specific structure
 
@@ -512,7 +512,7 @@ An R source package is just a directory with a specific structure
     - `R`
         - Your R files
 
-# Creating your R package
+## Creating your R package
 
 - Load `devtools` and use `create_package(...)` to create the directory structure for your package
 - You should put the package in a directory that is separate from your main project directory
@@ -520,7 +520,7 @@ An R source package is just a directory with a specific structure
 - Call your package `airlinestats`
 - A new RStudio window will open with your package
 
-# Creating your R package
+## Creating your R package
 
 ```{r}
 #| eval: false
@@ -530,12 +530,12 @@ create_package("~/git/airlinestats")
 
 - A new RStudio window will open with the code for your new package
 
-# Adding R code to your package
+## Adding R code to your package
 
 - Your R code goes in files in the `R/` directory
 - Any file in this directory ending in `.R` will be part of your package
 
-# Sidebar: namespaces
+## Sidebar: namespaces
 
 - Multiple packages may define functions with the same name
 - To keep this straight, R uses _namespaces_
@@ -543,14 +543,14 @@ create_package("~/git/airlinestats")
 - When you use `library(package)`, functions from that package are loaded into the global (main) namespace
 - `package::function` refers to a function within a specific package's namespace
 
-# Differences between R scripts and package code
+## Differences between R scripts and package code
 
 - Packages should never use `library()` as this could affect code from other packages
 - Almost everything in a package should be inside a function
     - Code that is not in functions will be run when the package is compiled or installed, not when it is used
     - Main exception is constants
 
-# Adding R code to your `airlinestats` package
+## Adding R code to your `airlinestats` package
 
 - Create three `.R` files, `load.R`, `analysis.R`, and `constants.R`
 - Put your `load_data` function in `load.R`
@@ -560,7 +560,7 @@ create_package("~/git/airlinestats")
 - _Don't_ include `library(tidyverse)` anywhere or `source("load.R")`
 - Save the files in the `R` directory of your package 
 
-# Loading your package
+## Loading your package
 
 - During development, you can load your package with `load_all()`
 - This will reload the latest version of all of your R code
@@ -572,7 +572,7 @@ library(devtools)
 load_all()
 ```
 
-# Using your package
+## Using your package
 
 - Functions from your package are now available
 - Try running the `load_data` function
@@ -590,7 +590,7 @@ data = load_data(
 
 <pre>Error in read_csv(data_file) : could not find function "read_csv"</pre>
 
-# Referring to functions from other libraries
+## Referring to functions from other libraries
 
 - Normally, `read_csv` and other functions become available when you run `library(tidyverse)`
 - But we don't do this in libraries
@@ -598,13 +598,13 @@ data = load_data(
     - Fully-qualified notation: `readr::read_csv`
     - `@importFrom` comments
 
-# Fully-qualified notation
+## Fully-qualified notation
 
 - When using fully qualified notation, we put the name of the library followed by `::` in front of the function name
 - So, `read_csv` is replaced with `readr::read_csv`
 - `left_join` and `rename` are prefixed with `dplyr::`
 
-# Fully qualified notation
+## Fully qualified notation
 
 - We tell R that we want to use functions from the libraries `readr` and `dplyr` by running `use_package()`
 - Do this, and run `load_all` again, and confirm that `load_data` now works
@@ -615,18 +615,18 @@ use_package("readr")
 use_package("dplyr")
 ```
 
-# Using `tidyverse` functionality
+## Using `tidyverse` functionality
 
 - `tidyverse` is a collection of many packages
 - Using `tidyverse` directly in libraries is discourages
 - Most data manipulation functions are from `dplyr`, data reading functions from `readr`
 
-# `@importFrom`
+## `@importFrom`
 
 - If you don't want to type out `dplyr::` over and over, you can use `@importFrom` to bring a function into your package's namespace
 - The `devtools` `use_import_from` function automates this task
 
-# `@importFrom`
+## `@importFrom`
 
 - Let's import `summarize`, `group_by`, `mutate`, `first`, `if_else`, `arrange`, `ungroup`, `filter` and `summarize` from `dplyr` to make our analysis code work
 - We alse need to import `%>%` from `magrittr`
@@ -639,12 +639,12 @@ use_import_from("magrittr", "%>%")
 
 - Accept the prompt to generate package documentation
 
-# What happened?
+## What happened?
 
 - `devtools` created a new `airlinestats-package.R` that contains `@importFrom` statements to bring these functions into the package namespace
 - The file consists of comments, but the `roxygen2` documentation system will convert these comments into import statements in the file `NAMESPACE` when the documentation is built
 
-# Confirm it worked
+## Confirm it worked
 
 - Re-run `load_all`
 - Run the two analyses again:
@@ -655,11 +655,11 @@ market_shares(data, OperatingCarrierName, OriginCity)
 busiest_routes(data, OriginCity, DestCity)
 ```
 
-# Checking the package
+## Checking the package
 
 - Run the `check()` function from `devtools`
 
-# Checking the package
+## Checking the package
 
 ```{r}
 #| eval: false
@@ -689,20 +689,20 @@ check()
 0 errors ✔ | 1 warning ✖ | 1 note ✖
 </pre>
 
-# Addressing the issues
+## Addressing the issues
 
 - `Non-standard license specification`
     - R is suggesting you fill out the `DESCRIPTION` file, which includes choosing a license. We'll skip this for now.
 - `No visible branding` and `undefined global`
     - These are the columns of our data; R doesn't know this when checking the code, though, and warns that they may be undefined
 
-# Installing the package
+## Installing the package
 
 - Just run `install()` to install the package on your machine
 - Now it will be available in any R script
 - You may be prompted to update packages when you do this
 
-# Bringing it full circle
+## Bringing it full circle
 
 - Return to the original script files
 - Replace the code in `air_analysis.R` and confirm you get the same results
@@ -722,24 +722,24 @@ Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MA
   could not find function "load_data"
 </pre>
 
-# Fixing the error
+## Fixing the error
 
 - Only functions you explicitly _export_ from a package will be available outside the package
 - This allows you to have functions used only internally
 - We mark a function to be exported by adding a comment above the function definition
 ```{r}
-#' @export
+##' @export
 ```
 - Mark all three functions exported
 
-# Reinstalling the package
+## Reinstalling the package
 
 - We need to run three functions to reinstall
     - `document()` to parse the special comments we added
     - `check()` to help ensure we didn't introduce additional errors
     - `install()` to reinstall the package
 
-# A new warning
+## A new warning
 
 <pre>
 ❯ checking for missing documentation entries ... WARNING
@@ -753,18 +753,67 @@ Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MA
 - R suggests that all exported functions in a package have documentation
 - We'll ignore this for now
 
-# Finishing up
+## Finishing up
 
 - Re-run the code using your package; it should work now
 - You may have to restart R
 
-# Automated testing
+## Avoiding absolute file paths
+
+- Often, R code will include something like
+    ```r
+    read_csv("C:/Users/mwbc/Documents/Analysis/NHTS_2022/trips.csv")
+    ```
+- or
+    ```r
+    setwd("C:/Users/mwbc/Documents/Analysis/NHTS_2022")
+    ```
+- These are both fragile; if you share the code with someone else they won't work
+- We want to avoid absolute file paths at all times
+
+## Avoiding absolute file paths: data in same directory
+
+- If you data is in the same directory as your code (or a subdirectory), the `here` package is your friend
+- `here::here("data/inputs.csv")` will find the "inputs.csv" file in the data subdirectory of your project, regardless of where the R script is saved
+
+## Avoiding absolute paths: data in different directory
+
+- If your data is in a different directory, you can use a `.Renviron` file to specify a file path
+- Let's create a `.Renviron` file in our package
+- Add to the file
+
+```
+DATA_PATH="path/to/odum-modular-design-r/data"
+```
+
+## Accessing the directory
+
+- Within R, you can get the data path from `.Renviron` with `Sys.getenv("DATA_PATH")`
+- At the top of my script I usually have something like
+    ```r
+    DATA_PATH = Sys.getenv("DATA_PATH")
+    ```
+- Whenever I read a file, I have
+    ```r
+    data = read_csv(file.path(DATA_PATH, "file_name.csv"))
+    ```
+
+## Using .Renviron in a team
+
+- This is particularly useful when working with a team
+- _Don't_ check `.Renviron` into version control
+- Each team member creates their own `.Renviron` with where the data is _on their computer_
+- All the other scripts work on everyone's computer without modification
+- I often create a `.Renviron.template` that I check in to version control to show folks what variable(s) need to be set
+    - Setting up on a new computer: copy `.Renviron.template` to `.Renviron` and edit the included paths
+
+## Automated testing
 
 - Automated testing formalizes testing and makes it repeatable
 - Every test is run automatically when you run `check()`
 - If you break something later, you are more likely to find out about it if your code has automated tests
 
-# The structure of testing
+## The structure of testing
 
 - Automated tests consist of code and _expectations_
     - Expectations are called _assertions_ in other languages
@@ -773,7 +822,7 @@ Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MA
 - This may require splitting your package code up into multiple functions
 - It's a good idea to test how your package acts when used incorrectly as well—for instance, when fed bad data
 
-# Automated testing in R
+## Automated testing in R
 
 - In R, automated testing is provided by the `testthat` package
 - We can add testing to our package by running
@@ -783,23 +832,23 @@ Error in load_data("data/air_sample.csv", "data/L_CARRIERS.csv", "data/L_CITY_MA
 use_testthat(3)
 ```
 
-# Automated testing in R
+## Automated testing in R
 
 - We now have a `tests/` directory, with a `testthat` directory inside it
 - Any file starting with `test` and ending with `.R` in this directory will be run as part of automated testing
 
-# Writing tests
+## Writing tests
 
 - Create an R file to hold tests for the analysis functions
 - It's good practice to match the names of the test files to the names of the files that define the code being tested, so create `tests/testthat/test-analysis.R`
 
-# Writing tests
+## Writing tests
 
 - We'll write two tests for the analysis code
     1. We'll test that market shares of all airline at an airport sum to 1
     2. We'll test that passing in a dataset without a `Passengers` column leads to an error
 
-# Writing tests
+## Writing tests
 
 - Often, we need data for our tests
 - Here, we will create a small dataset within our test file directly
@@ -807,7 +856,7 @@ use_testthat(3)
 - I like to put my code to generate test data in a function, and re-create the data for each test, so that there is no chance of one test modifying the data used by another
     - Unless the data take so long to create or load that this is impractical
 
-# Test data
+## Test data
 
 ```{r}
 #| eval: false
@@ -822,7 +871,7 @@ get_data = function () {
 }
 ```
 
-# Write the test for market shares
+## Write the test for market shares
 
 ```{r}
 #| eval: false
@@ -835,7 +884,7 @@ test_that("Market shares sum to 1", {
 })
 ```
 
-# Write the test for bad input
+## Write the test for bad input
 
 ```{r}
 #| eval: false
@@ -845,7 +894,7 @@ test_that("Error when passengers column missing", {
 })
 ```
 
-# Run tests
+## Run tests
 
 - Click "run tests" in the upper-right corner in RStudio
     - This will run the tests in the current test file
@@ -855,26 +904,26 @@ test_that("Error when passengers column missing", {
 test_file("tests/testthat/test-analysis.R")
 ```
 
-# Fix test errors
+## Fix test errors
 
 - We got a test failure for the market shares test
 - This is because we filtered out small airlines in the function
 - Let's remove the filtering from the function
     - It's good to break your functions into smaller pieces for easier testing
 
-# Exercise
+## Exercise
 
 - Check and reinstall your package
 - Notice that your tests were run
 - Confirm your scripts still work
 
-# Including data in tests
+## Including data in tests
 
 - Sometimes, you'll need to include toy datasets to use with your tests
 - Let's write a new test for the `busiest_routes` function, to make sure it identifies the busiest routes
 - We'll make a toy dataset to work with
 
-# Including data in tests
+## Including data in tests
 
 - Put data files in `inst/extdata`
 - Call it `passengers.csv`
@@ -886,24 +935,24 @@ RDU,CLT,3,130
 JFK,SFO,2,2586
 ```
 
-# Writing the test
+## Writing the test
 
 - Write a test that reads the data in and tests that `busiest_routes` returns JFK->SFO as the busiest route
 - You can get the path to your `passengers.csv` file with `system.file("extdata", "passengers.csv", package="airlinestats")`
 
-# When...
+## When...
 
-## to create a package
+### to create a package
 
 - When you are building reusable functions for a large project, or several projects
 - When you want to employ automated testing
 
-## not to create a package
+### not to create a package
 
 - Simple analyses and one-off projects
 - Projects with few interdependencies and where `stopifnot` testing is sufficient
 
-# How to use your package
+## How to use your package
 
 - Two ways to use your package: through `install` and through devtools `load_all`
 - `install` is the "right" way to use packages
@@ -911,57 +960,57 @@ JFK,SFO,2,2586
 - `load_all` has advantages, though
     - Always in sync with your code - no installation step needed
 
-# Writing scripts using your package
+## Writing scripts using your package
 
 - Scripts can be in your package directory or elsewhere
     - Just don't put them in your `R` directory
 - If you're installing your package, you can load it in your scripts with `library`
 - Otherwise, load it with `devtools::load_all()`
 
-# Where to put your scripts
+## Where to put your scripts
 
 - Single-project package - keep them in the same directory as the package
 - Multiple-project package - have a separate directory/repository for each project using the package
 
-# Exercise
+## Exercise
 
 - Move your analysis scripts into your package directory
 - Replace `library(airlinestats)` with `devtools::load_all()` to load the package
 
-# Environment management and `renv`
+## Environment management and `renv`
 
 - R projects rely heavily on outside packages
 - Changes to package versions may break code or change results
 - Reproducibility requires keeping track of used packages and versions
 
-# `renv`
+## `renv`
 
 - `renv` is a package that automates this
 - Once installed, set up a new project with `renv::init()` and snapshots current packages in use in a _lockfile_
 - `renv::snapshot()` updates currently used packages
 - `renv::restore()` will reinstall dependencies on a new machine or years in the future
 
-# Exercise: set up `renv` in your project
+## Exercise: set up `renv` in your project
 
 - Install `renv` if needed
 - Run `renv::init()`
 - Inspect `renv.lock`
 
-# `renv.lock`
+## `renv.lock`
 
 - Records the exact versions of all packages used
 - Allows `renv` to reproduce the environment exactly on another machine or in the future
 
-# `renv.lock`
+## `renv.lock`
 
 {{< include renvlock.qmd >}}
 
-#  `renv` environments
+##  `renv` environments
 
 - Your `renv` environment is specific to each project
 - Installing or upgrading a package in a project managed by `renv` will not affect any other projects on your computer
 
-# Updating an `renv` environment
+## Updating an `renv` environment
 
 - You can install packages in `renv` just like you normally would, with `install.packages`
     - `renv::install` works as well
@@ -969,21 +1018,21 @@ JFK,SFO,2,2586
 - By default, the lockfile will reflect all the packages you use in your code (via `library()`, `package::method()`, etc.), and all the packages they depend on
     - Won't include installed but unused packages
 
-# Restoring an environment
+## Restoring an environment
 
 - `renv::restore()` will read a lockfile and (try to) restore exactly the packages used
     - This may fail if the packages are no longer available
     - CRAN does not keep older binary packages, so older packages may need to be built from source
 - Don't do this now, since your environment is already set up
 
-# `renv` and package development
+## `renv` and package development
 
 - If you're keeping your scripts in your package repository, feel free to use `renv`
 - If your package is used by multiple projects, you want to use `renv` with each individual project
     - Those projects might require additional dependencies
     - Packages intended for reuse will need to coexist with other packages - if two packages used renv and requested different versions of (say) dplyr, that would be an issue
 
-# `renv` and a project-based workflow
+## `renv` and a project-based workflow
 
 - `renv` encourages you to think of your R projects as separate, logical entities
 - If you're using `renv`, you can't ever switch projects without also restarting R
@@ -991,7 +1040,7 @@ JFK,SFO,2,2586
 - Using a [project-based workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/) lets you make your code portable between machines
 - Key points: avoid `setwd`, `rm(list=ls())`, and saving `.RData`
 
-# `renv` and a project-based workflow
+## `renv` and a project-based workflow
 
 - Avoid absolute file paths (`/Users/...`, `C:\...`, `~/...`)
 - These will only work on your machine
@@ -999,18 +1048,18 @@ JFK,SFO,2,2586
 - If your data is not in the same directory as your code, have a constant that specifies where to find the data, so you only have to edit it once
 - Then use `file.path(DATA_DIR, "file.csv")` etc.
 
-# `renv` and version control
+## `renv` and version control
 
 - You should check `renv.lock` and your `renv/` directory into version control
     - not `renv/library` if you have it, this contains the actual packages
     - should be ignored automatically by Git
 
-# Sharing your project with others (or yourself)
+## Sharing your project with others (or yourself)
 
 - Easiest way to share your project with your team is through Github
 - You should be using version control with your project anyhow
 
-# Exercise
+## Exercise
 
 - Commit your project to git and post it to github
 - Add `.Rhistory` to `.gitignore` so we don't accidentally commit it
@@ -1018,7 +1067,7 @@ JFK,SFO,2,2586
 - Make the repository public for now
 
 
-# Installing your package elsewhere
+## Installing your package elsewhere
 
 - Go back to your original `odum-modular-r` R project
 - Set up `renv`
@@ -1028,7 +1077,7 @@ JFK,SFO,2,2586
 - Rewrite your code to use the `airlinestats` package
 - Run `renv::snapshot` to save the `airlinestats` dependency
 
-# Changes to `renv.lock`
+## Changes to `renv.lock`
 
 ```
     "airlinestats2": {
@@ -1050,7 +1099,7 @@ JFK,SFO,2,2586
     }
 ```
 
-# Benefits of installing this way vs. using `install()`
+## Benefits of installing this way vs. using `install()`
 
 - `renv` saved the commit ID in your lockfile
 - When you run `renv::restore`, you will get that exact commit
@@ -1059,14 +1108,14 @@ JFK,SFO,2,2586
 - If you use `install()`, code might work on one machine but not another because of different installed library versions
 - This method does not require explicitly downloading the package source on each machine
 
-# Collaborating with others
+## Collaborating with others
 
 - Anyone can run `renv::install("user/package")` and get your package
 - If you're tagging releases, `renv::install("user/package@tag")` will get that version
 - `renv::update("packagename")` to update
     - not `user/package`, but the package name you'd put in `library()`
 
-# Using private Github repositories
+## Using private Github repositories
 
 - Oftentimes you don't want to share your research code with the world (yet)
 - If you use a private Github repository, you need to authenticate to install packages from it
@@ -1075,38 +1124,38 @@ JFK,SFO,2,2586
 - Put `GITHUB_PAT=token` in your `~/.Renviron` file
     - the one in your home directory, not the one in your project - you don't want to accidentally commit your access token
 
-# Continuous integration
+## Continuous integration
 
 - We've been writing automated tests, but we have to run them manually
 - Realistically, you're probably not going to do this very often
 - You could miss broken tests for a long time
 - If you're using Github, we can set it up to run your tests on every push
 
-# Continuous integration
+## Continuous integration
 
 - This is particularly valuable if you're using branches for development (you should)
 - When you create a pull request, [Github will display whether the tests pass before you merge](https://github.com/mattwigway/TransitRouter.jl/pull/25)
 
-# Setting up continuous integration
+## Setting up continuous integration
 
 - Continuous integration is set up through [Github Actions](https://github.com/actions)
 - You add a workflow file in the `.github/workflows` directory
 
-# Setting up continuous integration
+## Setting up continuous integration
 
 - `usethis` provides continuous integration templates
 - Run `usethis::use_github_action("check-release")`
 - Inspect the file in `.github/workflows`
 
-# Setting up continuous integration
+## Setting up continuous integration
 
 - Commit your `.github` directory and push to github
 
-# See if it worked
+## See if it worked
 
 - Browse to your repository on Github. Look for the brown dot to indicate workflows are running to the right of the commit message.
 
-# Fixing the errors
+## Fixing the errors
 
 ```
   Found the following hidden files and directories:
@@ -1119,7 +1168,7 @@ Error: Error: R CMD check found WARNINGs
 - We can add `.github` to `.Rbuildignore` to let R know that this folder isn't part of the package
 - Commit and push again
 
-# Two more warnings
+## Two more warnings
 
 - We still get warnings about the license specification and documentation
 - We want to ignore those for now
@@ -1130,7 +1179,7 @@ with:
     error-on: '"error"'
 ```
 
-# Two more warnings
+## Two more warnings
 
 - This will suppress warnings
 - The quoting is important - using double quotes inside single quotes
@@ -1138,19 +1187,19 @@ with:
 - But will allow our package to build for now
 - Commit and push the updated file
 
-# Using `renv` with CI
+## Using `renv` with CI
 
 - To have Github install the exact packages we're using into the CI environment, we need to make one change
 - Swap out the `setup-r-dependencies` section of your workflow for `setup-renv`
 - No need to include `with: ` or the variables below it
 - Commit and push
 
-# CI and branch-based development
+## CI and branch-based development
 
 - CI is especially useful working with a team
 - CI will run on each pull request, and show if tests pass
 
-# Break a test
+## Break a test
 
 - Let's make sure our CI is working
 - One of our tests confirms that market shares sum to 1
@@ -1158,80 +1207,80 @@ with:
 - Do this on a branch, and push that branch to Github
 - Create a pull request from that branch
 
-# Fix the test
+## Fix the test
 
 - Change the test to use percentages, and push to your branch
 - Note that the pull request now shows that all tests pass
 
-# Documentation
+## Documentation
 
 - R previously complained that we didn't have documentation for our exported functions
 - It's a good practice to document all of our externally-facing functions
 - The roxygen2 system allows us to do this right in our R code
 
-# Roxygen2 comments
+## Roxygen2 comments
 
 ```{r}
-#' Compute carrier market shares by airport
-#'
-#' This function computes the market share of each carrier at each airport.
-#'
-#' The carrier and airport columns can be specified manually, so ticketing or operating
-#' carrier can be used (or another carrier column, if you had one---for instance, mainline
-#' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
-#' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
-#'
-#' @param dataframe data to use
-#' @param carriercol column of data frame that specifies carrier
-#' @param origincol column of data frame that specifies airport
-#'
-#' @returns dataset containing market shares by airline and airport
-#'
-#' @export
+##' Compute carrier market shares by airport
+##'
+##' This function computes the market share of each carrier at each airport.
+##'
+##' The carrier and airport columns can be specified manually, so ticketing or operating
+##' carrier can be used (or another carrier column, if you had one---for instance, mainline
+##' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
+##' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
+##'
+##' @param dataframe data to use
+##' @param carriercol column of data frame that specifies carrier
+##' @param origincol column of data frame that specifies airport
+##'
+##' @returns dataset containing market shares by airline and airport
+##'
+##' @export
 ```
 
-# Roxygen2 comment anatomy: title
+## Roxygen2 comment anatomy: title
 
 ```{r}
-#' Compute carrier market shares by airport
+##' Compute carrier market shares by airport
 ```
 
-# Roxygen2 comment anatomy: description
+## Roxygen2 comment anatomy: description
 
 ```{r}
-#' This function computes the market share of each carrier at each airport.
+##' This function computes the market share of each carrier at each airport.
 ```
 
-# Roxygen2 comment anatomy: details
+## Roxygen2 comment anatomy: details
 
 ```{r}
-#' The carrier and airport columns can be specified manually, so ticketing or operating
-#' carrier can be used (or another carrier column, if you had one---for instance, mainline
-#' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
-#' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
+##' The carrier and airport columns can be specified manually, so ticketing or operating
+##' carrier can be used (or another carrier column, if you had one---for instance, mainline
+##' vs regional carrier market share, or legacy vs. low-cost). The airport column is likewise
+##' an argument, so market shares per-airport, per-city, per-state, etc. can be calculated.
 ```
 
-# Roxygen2 comment anatomy: arguments (parameters)
+## Roxygen2 comment anatomy: arguments (parameters)
 
 ```{r}
-#' @param dataframe data to use
-#' @param carriercol column of data frame that specifies carrier
-#' @param origincol column of data frame that specifies airport
+##' @param dataframe data to use
+##' @param carriercol column of data frame that specifies carrier
+##' @param origincol column of data frame that specifies airport
 ```
 
-# Roxygen2 comment anatomy: return value
+## Roxygen2 comment anatomy: return value
 
 ```{r}
-#' @returns dataset containing market shares by airline and airport
+##' @returns dataset containing market shares by airline and airport
 ```
 
-# Roxygen2 comment anatomy: export
+## Roxygen2 comment anatomy: export
 
 ```{r}
-#' @export
+##' @export
 ```
 
-# Building the documentation
+## Building the documentation
 
 - Add a roxygen2 comment to the `market_shares` function
 - Build documentation with `document()`
@@ -1239,27 +1288,27 @@ with:
 - Reload package with `devtools::load_all()`
 - Run `?market_shares`
 
-# Exercise
+## Exercise
 
 - Document `busiest_routes` and `load_data`
 - Build the documentation and reload the module
 
-# The `man` folder and git
+## The `man` folder and git
 
 - It's typical to commit the `man` folder to git, which means you need to run `document()` before committing changes to your repository
 
-# Vignettes
+## Vignettes
 
 - The other common form of documentation for R packages is a vignette
 - Prose documents written as R markdown files
 
-# Markdown
+## Markdown
 
 - Markdown is a simple text formatting language
 ```
-# Heading 1
-## Heading 2
-###### Heading 6
+## Heading 1
+### Heading 2
+####### Heading 6
 
 _italic_
 **bold**
@@ -1267,17 +1316,17 @@ _italic_
 [link text](link url)
 ```
 
-# R Markdown
+## R Markdown
 
 - R Markdown allows embedding R code in markdown, between ` ```{r} ` and ` ``` `
 - Embedded R code will be executed, and outputs placed in the document
 
-# Writing a vignette for our package
+## Writing a vignette for our package
 
 - Run `usethis::use_vignette("airlinestats")` to create the vignette
     - "airlinestats" is the name of the vignette. You might have many vignettes with different names, rather than a single one matching the name of your package
 
-# Writing a vignette for our package
+## Writing a vignette for our package
 
 ```
 ---
@@ -1290,11 +1339,11 @@ vignette: >
 ---
 ```
 
-# Writing text
+## Writing text
 
 - You can write text simply as text - with markdown formatting as needed
 
-# Including code in the vignette
+## Including code in the vignette
 
 - Include the following code in your vignette, surrounded by ` ```{r} ` and ` ``` `
 
@@ -1308,59 +1357,59 @@ data = dplyr::tibble(
 market_shares(data, Origin, OperatingCarrierName)
 ```
 
-# Previewing your vignette
+## Previewing your vignette
 
 - Run `devtools::build_rmd("vignettes/your-vignette.Rmd")`
 
-# Using your vignette
+## Using your vignette
 
 - Once your package is installed, you can also see the vignette with `vignette("vignette_name", package="package_name")` or `browseVignettes("packagename")`
 
-# Fixing the license
+## Fixing the license
 
 - The last warning we had from the CI was that our package uses a non-standard license
 - There are two ways to specify a license in R
 - A [standard license](https://usethis.r-lib.org/reference/licenses.html), which is a code for one of several common Open Source licenses
 - A custom license, which might be "all rights reserved" or some other open-source license not specified
 
-# Fixing the license
+## Fixing the license
 
 - We'll use a proprietary license for now
     - Or if you prefer an open source one
 - `usethis::use_proprietary_license("your name")`
 
-# Re-enabling warnings
+## Re-enabling warnings
 
 - Remove the lines you added above about erroring on warnings in your workflow
 
-# Test it out
+## Test it out
 
 - Commit and push everything to github
 - CI should pass
 
-# Bringing it full circle
+## Bringing it full circle
 
 - Return to your original R project (where we used `renv::install`)
 - Run `renv::update("packagename")`
 - Run `library(airlinestats)`
 - Run `?market_shares`
 
-# Fix the error
+## Fix the error
 
 - Add `- uses: r-lib/actions/setup-pandoc@v2` to your workflow to allow it to build your RMarkdown vignettes
 
-# Vignettes and installing from Github
+## Vignettes and installing from Github
 
 - Vignettes are not built when installing from github, to save time
 - Best way to see vignettes is to [create a website for your package](https://r-pkgs.org/website.html)
 - Vignettes are mostly for packages you expect many others to use
 
-# Additional resources
+## Additional resources
 
 - R package book: [r-pkgs.org](https://r-pkgs.org/)
 - R Github Actions documentation: [github.com/r-lib/actions](https://github.com/r-lib/actions)
 
-## Contact
+### Contact
 
 Matt Bhagat-Conway<br/>
 [mwbc@unc.edu](mailto:mwbc@unc.edu)
